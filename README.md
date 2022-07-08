@@ -53,7 +53,7 @@
 ![image](https://user-images.githubusercontent.com/104349901/177922961-e16b4030-ba7a-4a69-be7f-76509f629abf.png)
 <br><br>
 ## 📕 API 설계
-<a href="https://www.notion.so/12-df4f63382fb146e69b3b5b96231bb792?v=cb365cd4d58a4fb28b01ced140e13be7">노션 바로가기</a>
+<a href="https://www.notion.so/91b31259354248b0943c80d659eb5cec?v=ea9ec0a1087548c0abfbd6e7a4c28fb0">노션 바로가기</a>
 <br><br><br>
 
 ## ⚙ DB 설계 ERD
