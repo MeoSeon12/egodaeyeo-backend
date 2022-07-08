@@ -1,12 +1,11 @@
 # 👉🏻프로젝트 명 
-## 이거대여.
+### 이거대여.
 <br>  
 
 ## 🎨프로젝트 주제
 <br>  
 
-### 당근마켓 모티브 개인 간 대여 서비스 플랫폼
-<br>
+### 당근마켓 모티브 개인 간 대여 서비스 플랫폼  
 중고물품을 사고 팔 수 있는 플랫폼은 대표적으로 중고나라와 당근마켓이 있는 것처럼 잠깐 동안 필요한 물건이나, 내가 사고 싶었던 물건을 빌려서 써보기 위한 대여 서비스를 대표하는 플랫폼이 있으면 좋을 것 같다는 생각에서 출발했습니다.
 <br><br><br>
 
@@ -49,7 +48,8 @@
 <a href="https://quixotic-wok-871.notion.site/S-A-3183ff7202e942099238af3effd956ea">노션 바로가기</a>
 <br><br>
 ## 🔨 개발 목업
-<a href="https://www.figma.com/file/cPz3rZf7v9BuIOhLHsL1En/%EC%9D%B4%EA%B1%B0%EB%8C%80%EC%97%AC.-%EB%AA%A9%EC%97%85?node-id=0%3A1">목업 figma 바로가기</a><br>
+<a href="https://www.figma.com/file/cPz3rZf7v9BuIOhLHsL1En/%EC%9D%B4%EA%B1%B0%EB%8C%80%EC%97%AC.-%EB%AA%A9%EC%97%85?node-id=0%3A1">목업 figma 바로가기</a>
+<br><br>
 ![image](https://user-images.githubusercontent.com/104349901/177922961-e16b4030-ba7a-4a69-be7f-76509f629abf.png)
 <br><br>
 ## 📕 API 설계
