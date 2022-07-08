@@ -57,8 +57,9 @@
 <br><br><br>
 
 ## ⚙ DB 설계 ERD
-<a href="">구글 시트 바로가기</a>  
-<br><br>
+<a href="https://docs.google.com/spreadsheets/d/1ZLFdnhCmHF1gWQ0VjzHNtW1nglS0MMpMtOdWKkzBeQo/edit?usp=sharing">구글 시트 바로가기</a>  
+<br>
+![image](https://user-images.githubusercontent.com/104349901/178025790-d7de8185-a7d8-4dcf-9db8-727a9354247c.png)
 
 <br><br><br>
 
