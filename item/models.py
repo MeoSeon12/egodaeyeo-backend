@@ -16,7 +16,7 @@ class Item(models.Model):
     section = models.CharField("섹션", max_length=10, choices=(('빌려요', 'borrow'), ('빌려드려요', 'lend')))
     title = models.CharField("제목", max_length=30)
     content = models.TextField("내용", max_length=300)
-    images = models.FileField("이미지", null=True)
+    images = models.FileField("이미지", null=True, upload_to='develop/')
     time_unit = models.CharField("시간 단위", max_length=2, choices=(('시간', 'hour'), ('일', 'day'), ('월', 'month')), null=True)
     price = models.PositiveIntegerField("가격", null=True)
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
