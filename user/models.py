@@ -1,3 +1,4 @@
+from distutils.command.upload import upload
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -30,7 +31,7 @@ class User(AbstractBaseUser):
     nickname = models.CharField("닉네임", max_length=15, unique=True)
     password = models.CharField("비밀번호", max_length=256)
     address = models.TextField("주소", max_length=256)
-    image = models.FileField("프로필", null=True)
+    image = models.FileField("프로필", null=True, upload_to='develop/')
     score = models.PositiveIntegerField("유저 점수", null=True, validators=[MaxValueValidator(100), MinValueValidator(1)])
     join_date = models.DateTimeField("가입일", auto_now_add=True)
     
