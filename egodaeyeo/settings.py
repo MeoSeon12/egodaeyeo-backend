@@ -188,12 +188,12 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = local_settings.SIMPLE_JWT
 
 # s3관련
-# DEFAULT_FILE_STORAGE = local_settings.DEFAULT_FILE_STORAGE
+DEFAULT_FILE_STORAGE = local_settings.DEFAULT_FILE_STORAGE
 
-# AWS_REGION = local_settings.AWS_REGION
-# AWS_ACCESS_KEY_ID = local_settings.AWS_ACCESS_KEY_ID
-# AWS_S3_SECRET_ACCESS_KEY = local_settings.AWS_S3_SECRET_ACCESS_KEY
-# AWS_STORAGE_BUCKET_NAME = local_settings.AWS_STORAGE_BUCKET_NAME
+AWS_REGION = local_settings.AWS_REGION
+AWS_ACCESS_KEY_ID = local_settings.AWS_ACCESS_KEY_ID
+AWS_S3_SECRET_ACCESS_KEY = local_settings.AWS_S3_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = local_settings.AWS_STORAGE_BUCKET_NAME
 
-# AWS_S3_SECURE_URLS = False       # use http instead of https
-# AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
+AWS_S3_SECURE_URLS = False       # use http instead of https
+AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
