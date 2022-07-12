@@ -9,7 +9,7 @@ class Category(models.Model):
         db_table = "categories"
         
     def __str__(self):
-        return f"[카테고리] {self.name}"
+        return f"[카테고리] {self.id} / {self.name}"
 
 
 class Item(models.Model):
@@ -29,7 +29,7 @@ class Item(models.Model):
         db_table = "items"
         
     def __str__(self):
-        return f"[아이템] {self.user.nickname} / {self.title} / {self.section}"
+        return f"[아이템] {self.id} / {self.user.nickname} / {self.title} / {self.section}"
 
 
 class Bookmark(models.Model):
@@ -40,7 +40,7 @@ class Bookmark(models.Model):
         db_table = "bookmarks"
         
     def __str__(self):
-        return f"[북마크] {self.user.nickname} / {self.item} 북마크"
+        return f"[북마크] {self.id} / {self.user.nickname} / {self.item} 북마크"
         
 
 class Inquiry(models.Model):
@@ -51,7 +51,7 @@ class Inquiry(models.Model):
         db_table = "inquiries"
         
     def __str__(self):
-        return f"[문의] {self.user.nickname} / {self.item}"
+        return f"[문의] {self.id} / {self.user.nickname} / {self.item}"
 
 
 class Review(models.Model):
@@ -65,4 +65,4 @@ class Review(models.Model):
         db_table = "reviews"
         
     def __str__(self):
-        return f"[리뷰] {self.user.nickname} / {self.item}"
+        return f"[리뷰] {self.id} / {self.user.nickname} / {self.item}"
