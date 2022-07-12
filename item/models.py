@@ -23,7 +23,7 @@ class Item(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField("생성일", auto_now_add=True)
     updated_at = models.DateTimeField("수정일", auto_now = True)
-    status = models.PositiveIntegerField("상태", choices=(('거래 종료', '거래 종료'), ('거래 가능','거래 가능'), ('예약 중', '예약 중'), ('거래 중', '거래 중')))
+    status = models.PositiveIntegerField("상태", choices=(('대여 종료', '대여 종료'), ('대여 가능','대여 가능'), ('예약 중', '예약 중'), ('대여 중', '대여 중')))
     
     class Meta:
         db_table = "items"
