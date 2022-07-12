@@ -5,7 +5,7 @@ from item.models import Item as ItemModel
 class Deal(models.Model):
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     item = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
-    status = models.PositiveIntegerField("상태", choices=(('0', '거래 종료'), ('1','거래 가능'), ('2', '예약 중'), ('3', '거래 중')))
+    status = models.PositiveIntegerField("상태", choices=(('거래 종료', '거래 종료'), ('거래 가능','거래 가능'), ('예약 중', '예약 중'), ('거래 중', '거래 중')))
     start_date = models.DateTimeField("시작일")
     end_date = models.DateTimeField("반납일")
 
