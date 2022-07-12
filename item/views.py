@@ -1,5 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+
 from rest_framework import permissions, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
@@ -7,6 +9,7 @@ from django.db.models import Q
 from item.models import Item as ItemModel
 from item.models import Category as CategoryModel
 from item.serializers import ItemSerializer, CategorySerializer
+from user.models import User as UserModel
 
 
 class ItemView(APIView):
@@ -37,3 +40,14 @@ class ItemView(APIView):
         
         
         return Response(data, status=status.HTTP_200_OK)
+        
+
+class DetailView(APIView):
+
+    def get(self, request):
+        items = ItemModel.objects.all().values()
+        print(items)
+        
+        # user = UserModel.objects.get(id=request.user)
+        # print(user)
+        return Response(items)
