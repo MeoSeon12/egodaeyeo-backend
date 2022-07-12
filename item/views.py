@@ -23,10 +23,18 @@ class ItemView(APIView):
         except:
             pass
         # 카테고리명 Query Parameter로 가져오기
-        category_name = request.GET.get('category', None)
-        if category_name is not None:
-            query = Q(category__name=category_name)
-            items = items.filter(query)
+        category_name = request.GET.get('category', "")
+        # 섹션 Query Parameter로 가져오기
+        section = request.GET.get('section', "")
+        
+        if category_name is not "":
+            category_query = Q(category__name=category_name)
+            items = items.filter(category_query)
+            
+        if section is not "":
+            section_query = Q(section=section)
+            items = items.filter(section_query)
+            
             
         item_serializer = ItemSerializer(items, many=True, context={"request": request})
         category_serializer = CategorySerializer(categories, many=True, context={"request": request})

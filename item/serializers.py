@@ -29,4 +29,4 @@ class ItemSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ItemModel
-        fields = ["title", "images", "price", "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
+        fields = ["id", "section", "category", "title", "images", "price", "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
