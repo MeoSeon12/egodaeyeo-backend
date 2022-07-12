@@ -35,9 +35,9 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'user',
     'item',
-    'deal',
     'help',
     'chat',
+    'contract',
     'rest_framework',
     'rest_framework_simplejwt',
     'django.contrib.admin',
