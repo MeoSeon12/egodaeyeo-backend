@@ -9,6 +9,6 @@ from user.views import (
 
 urlpatterns = [
     path('', UserView.as_view()),
-    path('api/farm/token', FarmTokenObtainPairView.as_view(), name='farm_token'),
+    path('api/token', FarmTokenObtainPairView.as_view(), name='access_token'),
     path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
 ]
