@@ -1,3 +1,5 @@
+from hashlib import new
+import jwt
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -22,9 +24,12 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from rest_framework_simplejwt.authentication import JWTAuthentication
+import local_settings
 
+
+SECRET_KEY = local_settings.SECRET['secret']
 BASE_URL = 'http://localhost:8000/'
-KAKAO_CALLBACK_URI = BASE_URL + 'users/kakao/callback/'
+KAKAO_CALLBACK_URI = BASE_URL + 'users/kakao/callback'
 
 class UserView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -73,33 +78,33 @@ class EgoTokenObtainPairView(TokenObtainPairView):
 #카카오 로그인
 def kakao_login(request):
     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
-    return redirect(
-        f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={KAKAO_CALLBACK_URI}&response_type=code"
-    )
+    return redirect(f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={KAKAO_CALLBACK_URI}&response_type=code")
 
 
 def kakao_callback(request):
     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
-    code = request.GET.get("code")
+    code = request.GET.get("code") #qs? 
     print(code)
     redirect_uri = KAKAO_CALLBACK_URI
     """
     Access Token Request
     """
-    token_req = requests.get(
-        f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}")
-    token_req_json = token_req.json()
-    print(token_req_json)
-    error = token_req_json.get("error")
+    token_request = requests.get(f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}")
+    token_request_json = token_request.json()
+    print(token_request_json)
+    error = token_request_json.get("error")
     if error is not None:
         raise JSONDecodeError(error)
-    access_token = token_req_json.get("access_token")
+    
+    access_token = token_request_json.get("access_token")
     """
     Email Request
     """
     profile_request = requests.get(
         "https://kapi.kakao.com/v2/user/me", headers={"Authorization": f"Bearer {access_token}"})
+    
     profile_json = profile_request.json()
+    
     error = profile_json.get("error")
     if error is not None:
         raise JSONDecodeError(error)
@@ -124,6 +129,7 @@ def kakao_callback(request):
             return JsonResponse({'err_msg': 'email exists but not social user'}, status=status.HTTP_400_BAD_REQUEST)
         if social_user.provider != 'kakao':
             return JsonResponse({'err_msg': 'no matching social type'}, status=status.HTTP_400_BAD_REQUEST)
+        
         # 기존에 Google로 가입된 유저
         data = {'access_token': access_token, 'code': code}
         accept = requests.post(
@@ -137,17 +143,28 @@ def kakao_callback(request):
     
     except UserModel.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입
-        data = {'access_token': access_token, 'code': code}
-        accept = requests.post(
-            f"{BASE_URL}users/kakao/login/finish/", data=data)
-        accept_status = accept.status_code
-        if accept_status != 200:
-            return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
-        # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
-        accept_json = accept.json()
-        accept_json.pop('user', None)
-        return JsonResponse(accept_json)
-
+        new_user = UserModel.objects.create(
+            nickname=nickname,
+            email=email,
+        )
+        encoded_jwt = jwt.encode({'id': new_user.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발행
+        return JsonResponse({
+                'access_token' : encoded_jwt.decode('UTF-8'),
+                'user_name'    : new_user.nickname,
+                'user_email'   : new_user.email,
+                }, status=status.HTTP_200_OK)
+        
+        
+        # data = {'access_token': access_token, 'code': code}
+        # accept = requests.post(
+        #     f"{BASE_URL}users/kakao/login/finish/", data=data)
+        # accept_status = accept.status_code
+        # if accept_status != 200:
+        #     return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
+        # # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
+        # accept_json = accept.json()
+        # accept_json.pop('user', None)
+        # return JsonResponse(accept_json
    # try:
     #     user = UserModel.objects.get(email=email)
     #     return Response({"error" : "같은 이메일로 가입한 사용자가 존재합니다."}, status=status.HTTP_400_BAD_REQUEST)
@@ -155,7 +172,6 @@ def kakao_callback(request):
     #     new_user = UserModel.objects.create(email=email, nickname=nickname)
     #     new_user.save()
     #     print(new_user)
-
         # try:
         #     social_user = SocialAccount.objects.get(user=new_user)
 
