@@ -3,12 +3,10 @@ from rest_framework.views import APIView
 from rest_framework import permissions, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
-from django.forms.models import model_to_dict
 
 from item.models import Item as ItemModel
 from item.models import Category as CategoryModel
-from item.serializers import ItemSerializer, CategorySerializer, ItemDetailSerializer
-from user.models import User as UserModel
+from item.serializers import ItemSerializer, CategorySerializer, DetailSerializer
 
 
 class ItemView(APIView):
@@ -59,5 +57,6 @@ class DetailView(APIView):
         except:
             return Response({'msg': '아이템 상세 페이지가 존재하지않습니다'}, status=status.HTTP_404_NOT_FOUND)
 
-        item_detail_serializer = ItemDetailSerializer(item)
-        return Response(item_detail_serializer.data, status=status.HTTP_200_OK)
+        detail_serializer = DetailSerializer(item)
+
+        return Response(detail_serializer.data, status=status.HTTP_200_OK)
