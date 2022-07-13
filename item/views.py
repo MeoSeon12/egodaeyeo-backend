@@ -54,9 +54,10 @@ class DetailView(APIView):
     def get(self, request, item_id):
         try:
             item = ItemModel.objects.get(id=item_id)
+        # 아이템 정보가 없을 시
         except:
-            return Response({'msg': '아이템 상세 페이지가 존재하지않습니다'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         detail_serializer = DetailSerializer(item)
-
+        
         return Response(detail_serializer.data, status=status.HTTP_200_OK)
