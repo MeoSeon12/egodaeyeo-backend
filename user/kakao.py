@@ -68,3 +68,16 @@ urlpatterns = [
     path('/login/google',GoogleLoginView.as_view()),
     path('/login/kakao',KakaoLoginView.as_view())
 ]
+
+
+        # 기존에 가입된 유저가 없으면 새로 가입
+        # new_user = UserModel.objects.create(
+        #     nickname=nickname,
+        #     email=email,
+        # )
+        # encoded_jwt = jwt.encode({'id': new_user.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발행
+        # return JsonResponse({
+        #         'access_token' : encoded_jwt.decode('UTF-8'),
+        #         'user_name'    : new_user.nickname,
+        #         'user_email'   : new_user.email,
+        #         }, status=status.HTTP_200_OK)

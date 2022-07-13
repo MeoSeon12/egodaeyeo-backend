@@ -14,7 +14,7 @@ urlpatterns = [
     path('', UserView.as_view()),
     path('api/token', EgoTokenObtainPairView.as_view(), name='access_token'),
     path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
-    path('kakao/login', views.kakao_login, name='kakao_login'),
-    path('kakao/callback', views.kakao_callback, name='kakao_callback'),
-    path('kakao/login/finish', KakaoLogin.as_view(), name='kakao_login_todjango'),
+    path('kakao/login/', views.kakao_login, name='kakao_login'),
+    path('kakao/callback/', views.kakao_callback, name='kakao_callback'),
+    path('kakao/login/finish/', KakaoLogin.as_view(), name='kakao_login_todjango'),
 ]

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'django.contrib.sites',
 
     # django rest framework
@@ -196,7 +197,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
-    ],
+    ]
 }
 
 
@@ -211,7 +212,7 @@ ACCOUNT_EMAIL_REQUIRED = True            # email 필드 사용 o
 ACCOUNT_USERNAME_REQUIRED = False        # username 필드 사용 x
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
-SITE_ID = 1 # for django.contrib.sites ----> localhost:8000
+SITE_ID = 2 # for django.contrib.sites ----> localhost:8000
 
 # s3관련
 DEFAULT_FILE_STORAGE = local_settings.DEFAULT_FILE_STORAGE
