@@ -9,7 +9,10 @@ from django.http import JsonResponse
 import requests
 from rest_framework import status
 from json.decoder import JSONDecodeError
+from egodaeyeo.settings import SECRET_KEY
+import local_settings
 
+SECRET_KEY = local_settings.SECRET['secret']
 views.py
 class KakaoLoginView(View): #카카오 로그인
 
@@ -37,7 +40,7 @@ class KakaoLoginView(View): #카카오 로그인
                 email           = user['properties'].get('email', None)
             )
             new_user_info.save()
-            encoded_jwt         = jwt.encode({'id': new_user_info.id}, wef_key, algorithm='HS256') # jwt토큰 발행
+            encoded_jwt         = jwt.encode({'id': new_user_info.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발행
             none_member_type    = 1
             return JsonResponse({
                 'access_token' : encoded_jwt.decode('UTF-8'),

@@ -2,14 +2,19 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
-
+from django.forms.models import model_to_dict
+from item.pagination import PaginationHandlerMixin
 from item.models import Item as ItemModel
 from item.models import Category as CategoryModel
 from item.serializers import ItemSerializer, CategorySerializer, DetailSerializer
 
+class ItemPagination(PageNumberPagination): # 👈 PageNumberPagination 상속
+    page_size = 12
 
-class ItemView(APIView):
+class ItemView(APIView, PaginationHandlerMixin):
+    pagination_class = ItemPagination
     
     def get(self, request):
         user = request.user
@@ -27,23 +32,27 @@ class ItemView(APIView):
         # 섹션 Query Parameter로 가져오기
         section = request.GET.get('section', "")
         
-        if category_name is not "":
+        if category_name != "":
             category_query = Q(category__name=category_name)
             items = items.filter(category_query)
             
-        if section is not "":
+        if section != "":
             section_query = Q(section=section)
             items = items.filter(section_query)
             
+        page = self.paginate_queryset(items)
+        
+        if page is not None:
+            item_serializer = self.get_paginated_response(ItemSerializer(page,many=True).data)
+        else:
+            item_serializer = ItemSerializer(items, many=True)
             
-        item_serializer = ItemSerializer(items, many=True, context={"request": request})
+        # item_serializer = ItemSerializer(items, many=True, context={"request": request})
         category_serializer = CategorySerializer(categories, many=True, context={"request": request})
         data = {
             'categories': category_serializer.data,
             'items': item_serializer.data,
         }
-        
-        
         return Response(data, status=status.HTTP_200_OK)
         
 
