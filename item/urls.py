@@ -6,5 +6,3 @@ urlpatterns = [
     path('', ItemView.as_view(),),
     path('details/<int:item_id>', DetailView.as_view()),
 ]
-
-
