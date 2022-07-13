@@ -2,7 +2,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 # TokenObtainPairSerializer를 상속하여 클레임 설정
 # access 토큰에 관한 정보를 커스텀할수있음.
-class FarmTokenObtainPairSerializer(TokenObtainPairSerializer):
+class EgoTokenObtainPairSerializer(TokenObtainPairSerializer):
     
     @classmethod
     def get_token(cls, user): 
