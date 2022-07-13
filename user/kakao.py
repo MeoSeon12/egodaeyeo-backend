@@ -70,14 +70,79 @@ urlpatterns = [
 ]
 
 
-        # 기존에 가입된 유저가 없으면 새로 가입
-        # new_user = UserModel.objects.create(
-        #     nickname=nickname,
-        #     email=email,
-        # )
-        # encoded_jwt = jwt.encode({'id': new_user.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발행
-        # return JsonResponse({
-        #         'access_token' : encoded_jwt.decode('UTF-8'),
-        #         'user_name'    : new_user.nickname,
-        #         'user_email'   : new_user.email,
-        #         }, status=status.HTTP_200_OK)
+# #카카오 로그인(카카오 자체에 로그인)
+# def kakao_login(request):
+#     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
+#     return redirect(
+#         f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={KAKAO_CALLBACK_URI}&response_type=code"
+#     )
+
+# #카카오에서 인증되면 콜백
+# def kakao_callback(request):
+#     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
+#     code = request.GET.get("code")
+#     print(f"코드! : {code}")
+#     redirect_uri = KAKAO_CALLBACK_URI
+#     """
+#     Access Token Request
+#     """
+#     token_request = requests.get(
+#         f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={rest_api_key}&redirect_uri={redirect_uri}&code={code}")
+#     token_request_json = token_request.json()
+#     print(f"토큰 리퀘스트 제슨! : {token_request_json}")
+#     error = token_request_json.get("error")
+    
+#     if error is not None:
+#         raise JSONDecodeError(error)
+#     access_token = token_request_json.get("access_token")
+#     """
+#     Email Request
+#     """
+#     profile_request = requests.get(
+#         "https://kapi.kakao.com/v2/user/me", headers={"Authorization": f"Bearer {access_token}"})
+#     profile_json = profile_request.json()
+#     error = profile_json.get("error")
+#     if error is not None:
+#         raise JSONDecodeError(error)
+#     kakao_account = profile_json.get('kakao_account')
+#     """
+#     kakao_account에서 이메일, 닉네임 정보 가져옴
+#     """
+#     email = kakao_account.get('email')
+#     nickname = kakao_account['profile']['nickname']
+#     """
+#     Signup or Signin Request
+#     """
+#     try:
+#         # 기존에 가입된 유저와 쿼리해서 존재하면서, socialaccount에도 존재하면 로그인
+#         user = UserModel.objects.get(email=email)
+#         social_user = SocialAccount.objects.filter(user=user).first()
+#         #로그인
+#         if social_user:
+#             encoded_jwt = jwt.encode({'id': user.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발급
+#             # return redirect("http://127.0.0.1:5500/", {"encoded_jwt": encoded_jwt})
+#             return JsonResponse({
+#                     "access_token" : encoded_jwt,
+#                     "msg" : "로그인 성공"
+#                     }, status=status.HTTP_200_OK)
+            
+#         # 동일한 이메일의 유저가 있지만, social계정이 아닐때 
+#         if social_user is None:
+#             return JsonResponse({"err_msg": "email exists but not social user"}, status=status.HTTP_400_BAD_REQUEST)
+        
+#         # 소셜계정이 카카오가 아닌 다른 소셜계정으로 가입했을때
+#         if social_user.provider != "kakao":
+#             return JsonResponse({"err_msg": "no matching social type"}, status=status.HTTP_400_BAD_REQUEST)
+    
+#     except UserModel.DoesNotExist:
+#         # 기존에 가입된 유저가 없으면 새로 가입
+#         new_user = UserModel.objects.create(
+#             nickname=nickname,
+#             email=email,
+#         )
+#         #소셜account에도 생성
+#         SocialAccount.objects.create(
+#             user_id=new_user.id,
+#         )
+        
+#         return JsonResponse({"msg": "회원가입에 성공 했습니다."}, status=status.HTTP_200_OK)
