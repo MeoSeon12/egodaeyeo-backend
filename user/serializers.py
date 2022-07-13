@@ -39,3 +39,30 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password' : {'write_only': True}
         }
+
+class KakaoUserSerializer(serializers.ModelSerializer):
+    
+    def create(self, validated_data):
+        user = UserModel(**validated_data)
+        user.save()
+        
+        return user
+    
+    def update(self, instance, validated_data):
+        for key, value in validated_data.items():
+            if key == "password":
+                instance.set_password(value)
+                continue
+            setattr(instance, key, value)
+            
+        instance.save()
+        
+        return instance
+            
+    class Meta:
+        model = UserModel
+        fields = ["id", "nickname", "email", "password"]
+        
+        # extra_kwargs = {
+        #     'password' : {'write_only': True}
+        # }
