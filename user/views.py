@@ -143,28 +143,28 @@ def kakao_callback(request):
     
     except UserModel.DoesNotExist:
         # 기존에 가입된 유저가 없으면 새로 가입
-        new_user = UserModel.objects.create(
-            nickname=nickname,
-            email=email,
-        )
-        encoded_jwt = jwt.encode({'id': new_user.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발행
-        return JsonResponse({
-                'access_token' : encoded_jwt.decode('UTF-8'),
-                'user_name'    : new_user.nickname,
-                'user_email'   : new_user.email,
-                }, status=status.HTTP_200_OK)
+        # new_user = UserModel.objects.create(
+        #     nickname=nickname,
+        #     email=email,
+        # )
+        # encoded_jwt = jwt.encode({'id': new_user.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발행
+        # return JsonResponse({
+        #         'access_token' : encoded_jwt.decode('UTF-8'),
+        #         'user_name'    : new_user.nickname,
+        #         'user_email'   : new_user.email,
+        #         }, status=status.HTTP_200_OK)
         
         
-        # data = {'access_token': access_token, 'code': code}
-        # accept = requests.post(
-        #     f"{BASE_URL}users/kakao/login/finish/", data=data)
-        # accept_status = accept.status_code
-        # if accept_status != 200:
-        #     return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
-        # # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
-        # accept_json = accept.json()
-        # accept_json.pop('user', None)
-        # return JsonResponse(accept_json
+        data = {'access_token': access_token, 'code': code}
+        accept = requests.post(
+            f"{BASE_URL}users/kakao/login/finish/", data=data)
+        accept_status = accept.status_code
+        if accept_status != 200:
+            return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
+        # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
+        accept_json = accept.json()
+        accept_json.pop('user', None)
+        return JsonResponse(accept_json)
    # try:
     #     user = UserModel.objects.get(email=email)
     #     return Response({"error" : "같은 이메일로 가입한 사용자가 존재합니다."}, status=status.HTTP_400_BAD_REQUEST)

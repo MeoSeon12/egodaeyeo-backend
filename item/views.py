@@ -4,12 +4,8 @@ from rest_framework import permissions, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
-<<<<<<< HEAD
 from django.forms.models import model_to_dict
 from item.pagination import PaginationHandlerMixin
-=======
-
->>>>>>> develop
 from item.models import Item as ItemModel
 from item.models import Category as CategoryModel
 from item.serializers import ItemSerializer, CategorySerializer, DetailSerializer
