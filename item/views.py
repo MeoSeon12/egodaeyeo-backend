@@ -74,7 +74,7 @@ class DetailView(APIView):
             item = ItemModel.objects.get(id=item_id)
         # 아이템 정보가 없을 시
         except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({'error_msg': '아이템 정보가 없습니다'}, status=status.HTTP_404_NOT_FOUND)
 
         login_id = request.user.id
         detail_serializer = DetailSerializer(item, context={'login_id': login_id})
@@ -94,6 +94,11 @@ class DetailView(APIView):
             bookmark_model_check.delete()
             # 로그인 유저 북마크 여부
             is_bookmark = False
+            # 북마크 갯수 카운터
+            bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
+
+            return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_200_OK)
+
 
         # 북마크 모델 없을시 저장
         except:
@@ -102,11 +107,8 @@ class DetailView(APIView):
                 'item': item
             }
             BookmarkModel.objects.create(**new_bookmark)
-
             # 로그인 유저 북마크 여부
             is_bookmark = True
-
-        # 북마크 갯수 갱신
-        bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
-
-        return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_200_OK)
+            # 북마크 갯수 갱신
+            bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
+            return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_201_CREATED)
