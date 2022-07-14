@@ -9,27 +9,27 @@ class Category(models.Model):
         db_table = "categories"
         
     def __str__(self):
-        return f"[카테고리] {self.name}"
+        return f"[카테고리] {self.id} / {self.name}"
 
 
 class Item(models.Model):
-    section = models.CharField("섹션", max_length=10, choices=(('빌려요', 'borrow'), ('빌려드려요', 'lend')))
+    section = models.CharField("섹션", max_length=10, choices=(('빌려요', '빌려요'), ('빌려드려요', '빌려드려요')))
     title = models.CharField("제목", max_length=30)
     content = models.TextField("내용", max_length=300)
     images = models.FileField("이미지", null=True, upload_to='develop/')
-    time_unit = models.CharField("시간 단위", max_length=2, choices=(('시간', 'hour'), ('일', 'day'), ('월', 'month')), null=True)
+    time_unit = models.CharField("시간 단위", max_length=5, choices=(('시간', '시간'), ('일', '일'), ('월', '월')), null=True)
     price = models.PositiveIntegerField("가격", null=True)
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField("생성일", auto_now_add=True)
     updated_at = models.DateTimeField("수정일", auto_now = True)
-    status = models.PositiveIntegerField("상태", choices=(('0', '거래 종료'), ('1','거래 가능'), ('2', '예약 중'), ('3', '거래 중')))
+    status = models.CharField("상태", max_length=10, choices=(('대여 종료', '대여 종료'), ('대여 가능','대여 가능'), ('예약 중', '예약 중'), ('대여 중', '대여 중')))
     
     class Meta:
         db_table = "items"
         
     def __str__(self):
-        return f"[아이템] {self.user.nickname} / {self.title} / {self.section}"
+        return f"[아이템] {self.id} / {self.user.nickname} / {self.title} / {self.section}"
 
 
 class Bookmark(models.Model):
@@ -40,7 +40,7 @@ class Bookmark(models.Model):
         db_table = "bookmarks"
         
     def __str__(self):
-        return f"[북마크] {self.user.nickname} / {self.item} 북마크"
+        return f"[북마크] {self.id} / {self.user.nickname} / {self.item} 북마크"
         
 
 class Inquiry(models.Model):
@@ -51,7 +51,7 @@ class Inquiry(models.Model):
         db_table = "inquiries"
         
     def __str__(self):
-        return f"[문의] {self.user.nickname} / {self.item}"
+        return f"[문의] {self.id} / {self.user.nickname} / {self.item}"
 
 
 class Review(models.Model):
@@ -65,4 +65,4 @@ class Review(models.Model):
         db_table = "reviews"
         
     def __str__(self):
-        return f"[리뷰] {self.user.nickname} / {self.item}"
+        return f"[리뷰] {self.id} / {self.user.nickname} / {self.item}"

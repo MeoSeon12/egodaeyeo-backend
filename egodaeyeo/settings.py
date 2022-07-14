@@ -35,17 +35,32 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'user',
     'item',
-    'deal',
     'help',
     'chat',
-    'rest_framework',
-    'rest_framework_simplejwt',
+    'contract',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.sites',
+
+    # django rest framework
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework.authtoken',
+    # dj-rest-auth
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    # django-allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',
     
 ]
 
@@ -170,12 +185,13 @@ AUTH_USER_MODEL = 'user.User'
 # settings.py
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [ # 기본적인 view 접근 권한 지정
-        'rest_framework.permissions.AllowAny'
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [ # session 혹은 token을 인증 할 클래스 설정
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
     'DEFAULT_PARSER_CLASSES': [ # request.data 속성에 액세스 할 때 사용되는 파서 지정
         'rest_framework.parsers.JSONParser',
@@ -186,6 +202,17 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = local_settings.SIMPLE_JWT
+
+#카카오 로그인 관련
+
+KAKAO_REST_API_KEY = local_settings.KAKAO_REST_API_KEY
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
+ACCOUNT_EMAIL_REQUIRED = True            # email 필드 사용 o
+ACCOUNT_USERNAME_REQUIRED = False        # username 필드 사용 x
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+SITE_ID = 2 # for django.contrib.sites ----> localhost:8000
 
 # s3관련
 DEFAULT_FILE_STORAGE = local_settings.DEFAULT_FILE_STORAGE
