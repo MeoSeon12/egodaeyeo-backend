@@ -1,9 +1,12 @@
 from rest_framework import serializers
-from item.models import Item as ItemModel
-from item.models import Category as CategoryModel
-from item.models import Review as ReviewModel
-from contract.models import Contract as ContractModel
 from datetime import datetime, timedelta
+from contract.models import Contract as ContractModel
+from item.models import (
+    Item as ItemModel,
+    Category as CategoryModel,
+    Review as ReviewModel,
+    Bookmark as BookmarkModel
+)
 
 
 # 아이템 페이지 직렬화
@@ -38,7 +41,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
 
 # 아이템 상세 페이지 직렬화
-# 리뷰
+# 리뷰 직렬화
 class DetailReviewSerializer(serializers.ModelSerializer):
 
     image = serializers.SerializerMethodField()
@@ -95,13 +98,14 @@ class DetailReviewSerializer(serializers.ModelSerializer):
         fields = ["image", "nickname", "content", "created_at", "period"]
 
 
-# 아이템
+# 아이템 직렬화
 class DetailSerializer(serializers.ModelSerializer):
 
     user = serializers.SerializerMethodField()
     remain_time = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
+    is_bookmark = serializers.SerializerMethodField()
     bookmark_length = serializers.SerializerMethodField()
     inquiry_length = serializers.SerializerMethodField()
     reviews = DetailReviewSerializer(many=True, source='review_set')
@@ -166,6 +170,15 @@ class DetailSerializer(serializers.ModelSerializer):
     def get_category(self, obj):
         return obj.category.name
 
+    def get_is_bookmark(self, obj):
+        # 해당 아이템에 로그인 유저가 찜했는지 여부 체크
+        try:
+            BookmarkModel.objects.get(item=obj.id, user=self.context['login_id'])
+            return True
+        # 찜하지 않았을 시
+        except:
+            return False
+
     def get_bookmark_length(self, obj):
         bookmarks = obj.bookmark_set
         return bookmarks.count()
@@ -179,5 +192,5 @@ class DetailSerializer(serializers.ModelSerializer):
         model = ItemModel
         fields = ["id", "user", "section", "category", "status", "remain_time", "title", "images",
                     "content", "time_unit", "price", "created_at", "updated_at",
-                    "bookmark_length", "inquiry_length", "reviews"]
+                    "is_bookmark", "bookmark_length", "inquiry_length", "reviews"]
 
