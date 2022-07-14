@@ -18,13 +18,13 @@ class ItemPagination(PageNumberPagination): # 👈 PageNumberPagination 상속
     page_size = 12
 
 class ItemListView(APIView, PaginationHandlerMixin):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [JWTAuthentication]
     pagination_class = ItemPagination
     
     def get(self, request):
         user = request.user
-        items = ItemModel.objects.all().order_by('-created_at')
+        items = ItemModel.objects.filter(status="대여 가능").order_by('-created_at')
         categories = CategoryModel.objects.all()
         
         #유저가 주소를 설정 했을때 Query
