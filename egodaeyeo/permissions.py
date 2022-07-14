@@ -9,7 +9,7 @@ class GenericAPIException(APIException):
         super().__init__(detail=detail, code=code)
         
         
-class IsAdminOrIsAuthenticatedAndAddressOrReadOnly(BasePermission):
+class IsAddressOrReadOnly(BasePermission):
     """
     admin 사용자, 혹은 회원가입하고 주소입력한 사용자는 모든 request 가능,
     비로그인 사용자는 조회만 가능
