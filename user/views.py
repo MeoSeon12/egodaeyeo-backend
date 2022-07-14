@@ -95,7 +95,7 @@ class KakaoLoginView(APIView): #카카오 로그인
             #로그인
             if social_user:
                 refresh = RefreshToken.for_user(user)
-                # encoded_jwt = jwt.encode({'user_id': user.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발급
+                
                 return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "로그인 성공"}, status=status.HTTP_200_OK)
             
             # 동일한 이메일의 유저가 있지만, social계정이 아닐때 
@@ -117,4 +117,4 @@ class KakaoLoginView(APIView): #카카오 로그인
                 user_id=new_user.id,
             )
         
-            return Response({"msg": "회원가입에 성공 했습니다."}, status=status.HTTP_200_OK)
+            return Response({"msg": "회원가입에 성공 했습니다."}, status=status.HTTP_201_CREATED)
