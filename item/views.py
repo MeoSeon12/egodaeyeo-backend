@@ -9,13 +9,14 @@ from item.pagination import PaginationHandlerMixin
 from item.models import Item as ItemModel
 from item.models import Category as CategoryModel
 from item.serializers import ItemSerializer, CategorySerializer, DetailSerializer
+from egodaeyeo.permissions import IsAdminOrIsAuthenticatedAndAddressOrReadOnly
 
 class ItemPagination(PageNumberPagination): # 👈 PageNumberPagination 상속
     page_size = 12
 
 class ItemListView(APIView, PaginationHandlerMixin):
-    # permission_classes = [permissions.IsAuthenticated]
-    # authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminOrIsAuthenticatedAndAddressOrReadOnly]
+    authentication_classes = [JWTAuthentication]
     pagination_class = ItemPagination
     
     def get(self, request):
@@ -60,7 +61,8 @@ class ItemListView(APIView, PaginationHandlerMixin):
 
 # 아이템 상세페이지 뷰
 class DetailView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrIsAuthenticatedAndAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
 
     # 페이지 접속시
@@ -74,3 +76,7 @@ class DetailView(APIView):
         detail_serializer = DetailSerializer(item)
         
         return Response(detail_serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, item_id):
+        
+        return Response({"msg": "good"})
