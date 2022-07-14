@@ -13,7 +13,9 @@ from item.serializers import ItemSerializer, CategorySerializer, DetailSerialize
 class ItemPagination(PageNumberPagination): # 👈 PageNumberPagination 상속
     page_size = 12
 
-class ItemView(APIView, PaginationHandlerMixin):
+class ItemListView(APIView, PaginationHandlerMixin):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     pagination_class = ItemPagination
     
     def get(self, request):

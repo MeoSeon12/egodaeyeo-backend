@@ -11,9 +11,10 @@ from user.models import User as UserModel
 import requests
 from django.shortcuts import redirect
 from django.conf import settings
-from dj_rest_auth.registration.views import SocialLoginView
-from allauth.socialaccount.providers.kakao import views as kakao_view
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+# from dj_rest_auth.registration.views import SocialLoginView
+# from allauth.socialaccount.providers.kakao import views as kakao_view
+# from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from rest_framework_simplejwt.tokens import RefreshToken
 from allauth.socialaccount.models import SocialAccount
 
 from user.jwt_claim_serializer import EgoTokenObtainPairSerializer
@@ -93,8 +94,9 @@ class KakaoLoginView(APIView): #카카오 로그인
             social_user = SocialAccount.objects.filter(user=user).first()
             #로그인
             if social_user:
-                encoded_jwt = jwt.encode({'id': user.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발급
-                return Response({"access_token" : encoded_jwt, "msg" : "로그인 성공"}, status=status.HTTP_200_OK)
+                refresh = RefreshToken.for_user(user)
+                # encoded_jwt = jwt.encode({'user_id': user.id}, SECRET_KEY, algorithm='HS256') # jwt토큰 발급
+                return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "로그인 성공"}, status=status.HTTP_200_OK)
             
             # 동일한 이메일의 유저가 있지만, social계정이 아닐때 
             if social_user is None:
