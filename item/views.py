@@ -6,6 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
 from item.pagination import PaginationHandlerMixin
 from item.serializers import ItemSerializer, CategorySerializer, DetailSerializer
+from egodaeyeo.permissions import IsAdminOrIsAuthenticatedAndAddressOrReadOnly
 from user.models import User as UserModel
 from item.models import (
     Item as ItemModel,
@@ -18,8 +19,8 @@ class ItemPagination(PageNumberPagination): # 👈 PageNumberPagination 상속
     page_size = 12
 
 class ItemListView(APIView, PaginationHandlerMixin):
-    # permission_classes = [permissions.IsAuthenticated]
-    # authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminOrIsAuthenticatedAndAddressOrReadOnly]
+    authentication_classes = [JWTAuthentication]
     pagination_class = ItemPagination
     
     def get(self, request):
@@ -64,7 +65,8 @@ class ItemListView(APIView, PaginationHandlerMixin):
 
 # 아이템 상세페이지 뷰
 class DetailView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrIsAuthenticatedAndAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
 
     # 페이지 접속시
@@ -112,3 +114,4 @@ class DetailView(APIView):
             # 북마크 갯수 갱신
             bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
             return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_201_CREATED)
+
