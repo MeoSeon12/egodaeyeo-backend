@@ -105,6 +105,7 @@ CORS_ALLOW_HEADERS = [
 
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5500',
+    'https://egodaeyeo.netlify.app',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
