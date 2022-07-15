@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from datetime import datetime, timedelta
+from datetime import datetime
 from contract.models import Contract as ContractModel
 from item.models import (
     Item as ItemModel,
