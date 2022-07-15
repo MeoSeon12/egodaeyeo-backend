@@ -6,7 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
 from item.pagination import PaginationHandlerMixin
 from item.serializers import ItemSerializer, CategorySerializer, DetailSerializer
-from egodaeyeo.permissions import IsAdminOrIsAuthenticatedAndAddressOrReadOnly
+from egodaeyeo.permissions import IsAddressOrReadOnly
 from user.models import User as UserModel
 from item.models import (
     Item as ItemModel,
@@ -19,7 +19,7 @@ class ItemPagination(PageNumberPagination): # 👈 PageNumberPagination 상속
     page_size = 12
 
 class ItemListView(APIView, PaginationHandlerMixin):
-    permission_classes = [IsAdminOrIsAuthenticatedAndAddressOrReadOnly]
+    permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
     pagination_class = ItemPagination
     
@@ -65,8 +65,7 @@ class ItemListView(APIView, PaginationHandlerMixin):
 
 # 아이템 상세페이지 뷰
 class DetailView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
-    permission_classes = [IsAdminOrIsAuthenticatedAndAddressOrReadOnly]
+    permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
 
     # 페이지 접속시
