@@ -30,7 +30,7 @@ class ItemListView(APIView, PaginationHandlerMixin):
         
         #유저가 주소를 설정 했을때 Query
         try:
-            address_query = Q(user__address__contains=user.address) & ~Q(user=user)
+            address_query = Q(user__address__contains=user.address)
             items = items.filter(address_query)
         except:
             pass
