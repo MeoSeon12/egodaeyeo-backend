@@ -1,34 +1,18 @@
-from django import http
-from django.views import View
-import jwt
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import permissions
 from user.serializers import UserSerializer
 from user.models import User as UserModel
-
 import requests
-from django.shortcuts import redirect
-from django.conf import settings
-# from dj_rest_auth.registration.views import SocialLoginView
-# from allauth.socialaccount.providers.kakao import views as kakao_view
-# from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from rest_framework_simplejwt.tokens import RefreshToken
 from allauth.socialaccount.models import SocialAccount
-
 from user.jwt_claim_serializer import EgoTokenObtainPairSerializer
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 import local_settings
 
 SECRET_KEY = local_settings.SECRET['secret']
-# BASE_URL = 'http://localhost:8000/'
-# KAKAO_CALLBACK_URI = BASE_URL + 'users/kakao/callback/'
-
 class UserView(APIView):
     permission_classes = [permissions.AllowAny]
     
@@ -69,11 +53,9 @@ class UserView(APIView):
 #JWT 로그인
 class EgoTokenObtainPairView(TokenObtainPairView):
     permission_classes = [permissions.AllowAny]
-    #serializer_class 변수에 커스터마이징 된 시리얼라이저를 넣어 준다!
     serializer_class = EgoTokenObtainPairSerializer
 
-
-class KakaoLoginView(APIView): #카카오 로그인
+class KakaoLoginView(APIView):
 
     def get(self, request):
         access_token = request.headers["Authorization"]

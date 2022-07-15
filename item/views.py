@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions, status
+from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
@@ -30,10 +30,11 @@ class ItemListView(APIView, PaginationHandlerMixin):
         
         #유저가 주소를 설정 했을때 Query
         try:
-            address_query = Q(item__user__address__contains=user.address)
+            address_query = Q(user__address__contains=user.address) & ~Q(user=user)
             items = items.filter(address_query)
         except:
             pass
+        
         # 카테고리명 Query Parameter로 가져오기
         category_name = request.GET.get('category', "")
         # 섹션 Query Parameter로 가져오기
@@ -53,8 +54,7 @@ class ItemListView(APIView, PaginationHandlerMixin):
             item_serializer = self.get_paginated_response(ItemSerializer(page,many=True).data)
         else:
             item_serializer = ItemSerializer(items, many=True)
-            
-        # item_serializer = ItemSerializer(items, many=True, context={"request": request})
+        
         category_serializer = CategorySerializer(categories, many=True, context={"request": request})
         data = {
             'categories': category_serializer.data,
