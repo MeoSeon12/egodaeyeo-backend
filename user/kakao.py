@@ -146,3 +146,14 @@
 # #         )
         
 # #         return JsonResponse({"msg": "회원가입에 성공 했습니다."}, status=status.HTTP_200_OK)
+
+
+
+
+# KakaoLoginView
+# headers      = ({'Authorization' : f"Bearer {access_token}"})
+        # url          = "https://kapi.kakao.com/v2/user/me" # Authorization(프론트에서 받은 토큰)을 이용해서 회원의 정보를 확인하기 위한 카카오 API 주소
+        # response     = requests.request("POST", url, headers=headers) # API를 요청하여 회원의 정보를 response에 저장
+        # user         = response.json()
+        # email        = user['kakao_account']['email']
+        # nickname     = user['properties']['nickname']

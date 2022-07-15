@@ -75,18 +75,10 @@ class EgoTokenObtainPairView(TokenObtainPairView):
 
 class KakaoLoginView(APIView): #카카오 로그인
 
-    def get(self, request):
+    def post(self, request):
         access_token = request.headers["Authorization"]
-        headers      = ({'Authorization' : f"Bearer {access_token}"})
-        url          = "https://kapi.kakao.com/v2/user/me" # Authorization(프론트에서 받은 토큰)을 이용해서 회원의 정보를 확인하기 위한 카카오 API 주소
-        response     = requests.request("POST", url, headers=headers) # API를 요청하여 회원의 정보를 response에 저장
-        user         = response.json()
-        email        = user['kakao_account']['email']
-        nickname     = user['properties']['nickname']
-        print(f"토큰: {access_token}")
-        print(f"리스폰스: {response}")
-        print(f"유저: {user}")
-        print(f"이메일: {email}")
+        email = request.data.get("email")
+        nickname = request.data.get("nickname")
 
         try:
             # 기존에 가입된 유저와 쿼리해서 존재하면서, socialaccount에도 존재하면 로그인
@@ -116,5 +108,10 @@ class KakaoLoginView(APIView): #카카오 로그인
             SocialAccount.objects.create(
                 user_id=new_user.id,
             )
-        
-            return Response({"msg": "회원가입에 성공 했습니다."}, status=status.HTTP_201_CREATED)
+
+            refresh = RefreshToken.for_user(new_user)
+                
+            return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "회원가입 성공"}, status=status.HTTP_201_CREATED)
+
+            # return Response({'msg': 'test'},status=status.HTTP_201_CREATED)
+
