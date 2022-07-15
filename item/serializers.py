@@ -102,6 +102,7 @@ class DetailReviewSerializer(serializers.ModelSerializer):
 class DetailSerializer(serializers.ModelSerializer):
 
     user = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
     remain_time = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
@@ -122,6 +123,12 @@ class DetailSerializer(serializers.ModelSerializer):
         user['score'] = score
 
         return user
+
+    def get_images(self, obj):
+        image_list = obj.itemimage_set.values('image')
+        images = [f"https://egodaeyeo.s3.amazonaws.com/{image['image']}" for image in image_list]
+
+        return images
 
     def get_remain_time(self, obj):
         
