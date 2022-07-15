@@ -11,7 +11,7 @@ class EgoTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # 사용자 지정 클레임
         token['nickname'] = user.nickname
-        token['image'] = user.image
+        token['image'] = user.image.url
         
         # +a 로 넣어서 커스텀 가능
 
