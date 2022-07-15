@@ -31,7 +31,7 @@ class User(AbstractBaseUser):
     nickname = models.CharField("닉네임", max_length=15, unique=True)
     password = models.CharField("비밀번호", max_length=256)
     address = models.TextField("주소", max_length=256)
-    image = models.ImageField("이미지", default="../static/profile.jpg", upload_to='profile/')
+    image = models.ImageField("이미지", default="../static/default_profile.jpg", upload_to='profile/')
     score = models.PositiveIntegerField("유저 점수", blank=True, null=True, validators=[MaxValueValidator(100), MinValueValidator(1)])
     join_date = models.DateTimeField("가입일", auto_now_add=True)
     
