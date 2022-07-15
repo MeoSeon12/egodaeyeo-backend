@@ -116,5 +116,8 @@ class KakaoLoginView(APIView): #카카오 로그인
             SocialAccount.objects.create(
                 user_id=new_user.id,
             )
-        
-            return Response({"msg": "회원가입에 성공 했습니다."}, status=status.HTTP_201_CREATED)
+
+            refresh = RefreshToken.for_user(new_user)
+                
+            return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "회원가입 성공"}, status=status.HTTP_201_CREATED)
+
