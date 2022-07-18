@@ -5,6 +5,7 @@ from user.views import (
     TokenRefreshView,
     EgoTokenObtainPairView,
     UserView,
+    MyPageView
 )
 
 urlpatterns = [
@@ -13,5 +14,6 @@ urlpatterns = [
     path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/kakao/', KakaoLoginView.as_view(), name='kakao_login'),
     path('<int:id>/', UserView.as_view()),
+    path('mypage/<int:id>/', MyPageView.as_view()),
 
 ]

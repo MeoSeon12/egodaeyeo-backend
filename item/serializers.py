@@ -52,11 +52,23 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = ["id", "section", "category", "image", "title", "price", 
                   "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
 
+class MyPageItemSerializer(serializers.ModelSerializer):
+    # images = ItemImageSerializer(many=True, source='itemimage_set')
+    image = serializers.SerializerMethodField()
+    
+    def get_image(self, obj):
+        #아이템의 첫번째 이미지 한개
+        return obj.itemimage_set.first().image.url
+    
+    class Meta:
+        model = ItemModel
+        fields = ["id", "section", "image", "title", "status"]
+
 class ContractSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ContractModel
-        fields = ["id", "item", "user", "start_date", "end_date"]
+        fields = ["id", "item", "status", "user", "start_date", "end_date"]
 
 
 
