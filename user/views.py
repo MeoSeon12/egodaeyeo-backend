@@ -27,8 +27,18 @@ class UserView(APIView):
     def get(self, request, id):
         user = UserModel.objects.get(id=id)
         user_image = user.image.url
+        user_nickname = user.nickname
+        user_score = user.score
+        user_address = user.address
+        
+        data = {
+            "user_image": user_image,
+            "user_nickname": user_nickname,
+            "user_score": user_score,
+            "user_address": user_address
+        }
 
-        return Response(user_data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
     
     #DONE 회원가입
     def post(self, request):
@@ -108,9 +118,10 @@ class MyPageView(APIView):
     authentication_classes = [JWTAuthentication]
 
     # 마이페이지 거래내역 / 찜 리스트 조회
-    def get(self, request, id):
+    def get(self, request):
+        user_id = request.user.id
         tab = request.GET.get('tab', '')
-        user = UserModel.objects.get(id=id)
+        user = UserModel.objects.get(id=user_id)
 
         if tab == "ongoing":
             my_ongoing_contracts = ContractModel.objects.filter(Q(status='대여 중') & Q(user=user.id)).order_by('-id')
@@ -122,16 +133,16 @@ class MyPageView(APIView):
             closed_contract_serializer = MyPageContractSerializer(my_closed_contracts, many=True)
             return Response(closed_contract_serializer.data, status=status.HTTP_200_OK)
 
-        if tab == "my_items":
-            my_items = ItemModel.objects.filter(user=user.id).order_by('-id')
-            my_items_serialiizer = MyPageItemSerializer(my_items, many=True)
-            return Response(my_items_serialiizer.data, status=status.HTTP_200_OK)
-
         if tab == "bookmarks":
             my_bookmarks = BookmarkModel.objects.filter(user=user.id).order_by('-id')
             my_bookmarks_serializer = MyBookmarkSerializer(my_bookmarks, many=True)
             return Response(my_bookmarks_serializer.data, status=status.HTTP_200_OK)
 
+        if tab == "myitems":
+            my_items = ItemModel.objects.filter(user=user.id).order_by('-id')
+            my_items_serialiizer = MyPageItemSerializer(my_items, many=True)
+            return Response(my_items_serialiizer.data, status=status.HTTP_200_OK)
+        
         return Response({"msg": "해당내역 없음"}, status=status.HTTP_204_NO_CONTENT)
 
 
