@@ -30,7 +30,10 @@ class ItemListView(APIView, PaginationHandlerMixin):
         
         #유저가 주소를 설정 했을때 Query
         try:
-            address_query = Q(user__address__contains=user.address)
+            #시군구 까지 split해서 DB에서 쿼리 
+            city = user.address.split(' ')[0]
+            ward_county = user.address.split(' ')[1]
+            address_query = Q(user__address__contains=city) & Q(user__address__contains=ward_county)
             items = items.filter(address_query)
         except:
             pass
@@ -51,9 +54,9 @@ class ItemListView(APIView, PaginationHandlerMixin):
         page = self.paginate_queryset(items)
         
         if page is not None:
-            item_serializer = self.get_paginated_response(ItemSerializer(page,many=True).data)
+            item_serializer = self.get_paginated_response(ItemSerializer(page, many=True, context={"request": request}).data)
         else:
-            item_serializer = ItemSerializer(items, many=True)
+            item_serializer = ItemSerializer(items, many=True, context={"request": request})
         
         category_serializer = CategorySerializer(categories, many=True, context={"request": request})
         data = {
