@@ -1,17 +1,18 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions, status
+from rest_framework import status, permissions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
 from item.pagination import PaginationHandlerMixin
-from item.serializers import ItemSerializer, CategorySerializer, DetailSerializer
+from item.serializers import ItemSerializer, CategorySerializer, DetailSerializer, DetailReviewSerializer, ContractSerializer
 from egodaeyeo.permissions import IsAddressOrReadOnly
 from user.models import User as UserModel
 from item.models import (
     Item as ItemModel,
     Category as CategoryModel,
     Bookmark as BookmarkModel,
+    Review as ReviewModel
 )
 
 
@@ -30,10 +31,14 @@ class ItemListView(APIView, PaginationHandlerMixin):
         
         #유저가 주소를 설정 했을때 Query
         try:
-            address_query = Q(item__user__address__contains=user.address)
+            #시군구 까지 split해서 DB에서 쿼리 
+            city = user.address.split(' ')[0]
+            ward_county = user.address.split(' ')[1]
+            address_query = Q(user__address__contains=city) & Q(user__address__contains=ward_county)
             items = items.filter(address_query)
         except:
             pass
+        
         # 카테고리명 Query Parameter로 가져오기
         category_name = request.GET.get('category', "")
         # 섹션 Query Parameter로 가져오기
@@ -50,11 +55,10 @@ class ItemListView(APIView, PaginationHandlerMixin):
         page = self.paginate_queryset(items)
         
         if page is not None:
-            item_serializer = self.get_paginated_response(ItemSerializer(page,many=True).data)
+            item_serializer = self.get_paginated_response(ItemSerializer(page, many=True, context={"request": request}).data)
         else:
-            item_serializer = ItemSerializer(items, many=True)
-            
-        # item_serializer = ItemSerializer(items, many=True, context={"request": request})
+            item_serializer = ItemSerializer(items, many=True, context={"request": request})
+        
         category_serializer = CategorySerializer(categories, many=True, context={"request": request})
         data = {
             'categories': category_serializer.data,
@@ -65,7 +69,6 @@ class ItemListView(APIView, PaginationHandlerMixin):
 
 # 아이템 상세페이지 뷰
 class DetailView(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
 
@@ -114,4 +117,58 @@ class DetailView(APIView):
             # 북마크 갯수 갱신
             bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
             return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_201_CREATED)
+
+class ReviewView(APIView):
+    permission_classes = [IsAddressOrReadOnly]
+    authentication_classes = [JWTAuthentication]
+
+    # 리뷰작성 버튼 클릭시
+    def post(self, request, item_id):
+        user_id = request.user.id
+        content = request.data.get("content")
+        rating = request.data.get("rating")
+        item = ItemModel.objects.get(id=item_id)
+
+        review_data = {
+            "user": user_id,
+            "item": item.id,
+            "content": content,
+            "star": rating
+        }
+
+        review_serializer = DetailReviewSerializer(data=review_data, context={"request": request})
+    
+        if review_serializer.is_valid():
+            review_serializer.save()
+            return Response(review_serializer.data, status=status.HTTP_200_OK)
+    
+        return Response(review_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ContractView(APIView):
+    permission_classes = [IsAddressOrReadOnly]
+    authentication_classes = [JWTAuthentication]
+
+    # 대여 신청 버튼 클릭시
+    def post(self, request, item_id):
+        user_id = request.user.id
+        start_date = request.data.get("rentalStartTime")
+        end_date = request.data.get("rentalEndTime")
+        item = ItemModel.objects.get(id=item_id)
+
+        contract_data = {
+            "user": user_id,
+            "item": item.id,
+            "start_date": start_date,
+            "end_date": end_date
+        }
+
+        contract_serializer = ContractSerializer(data=contract_data, context={"request": request})
+    
+        if contract_serializer.is_valid():
+            contract_serializer.save()
+            return Response(contract_serializer.data, status=status.HTTP_200_OK)
+    
+        return Response(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
