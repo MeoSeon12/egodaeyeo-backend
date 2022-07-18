@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from user.models import User as UserModel
-
-VALID_EMAIL_LIST = ["naver.com", "gmail.com", "daum.net"]
-
+from item.serializers import MyPageItemSerializer
+from item.models import Bookmark as BookmarkModel
 
 class UserSerializer(serializers.ModelSerializer):
     
@@ -32,3 +31,12 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password' : {'write_only': True}
         }
+
+
+
+class MyBookmarkSerializer(serializers.ModelSerializer):
+    item = MyPageItemSerializer()
+   
+    class Meta:
+        model = BookmarkModel
+        fields = ["id", "item"]

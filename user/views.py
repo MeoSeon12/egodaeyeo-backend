@@ -2,26 +2,33 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import permissions
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, MyBookmarkSerializer
 from user.models import User as UserModel
+from item.models import (
+    Item as ItemModel,
+    Bookmark as BookmarkModel,
+)
+from item.serializers import MyPageItemSerializer
+from contract.models import Contract as ContractModel
+from contract.serializers import MyPageContractSerializer
+
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from allauth.socialaccount.models import SocialAccount
 from user.jwt_claim_serializer import EgoTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.authentication import JWTAuthentication
-import local_settings
+from django.db.models import Q
 
-SECRET_KEY = local_settings.SECRET['secret']
 class UserView(APIView):
     permission_classes = [permissions.AllowAny]
     
     # 회원정보 조회
     def get(self, request, id):
+        user = UserModel.objects.get(id=id)
+        user_image = user.image.url
 
-        user_image = UserModel.objects.filter(id=id).first().image.url
-        
-        return Response(user_image, status=status.HTTP_200_OK)
+        return Response(user_data, status=status.HTTP_200_OK)
     
     #DONE 회원가입
     def post(self, request):
@@ -94,3 +101,43 @@ class KakaoLoginView(APIView):
                 
             return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "회원가입 성공"}, status=status.HTTP_201_CREATED)
 
+
+class MyPageView(APIView):
+
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = [JWTAuthentication]
+
+    # 마이페이지 거래내역 / 찜 리스트 조회
+    def get(self, request, id):
+        tab = request.GET.get('tab', '')
+        user = UserModel.objects.get(id=id)
+
+        if tab == "ongoing":
+            my_ongoing_contracts = ContractModel.objects.filter(Q(status='대여 중') & Q(user=user.id)).order_by('-id')
+            ongoing_contract_serializer = MyPageContractSerializer(my_ongoing_contracts, many=True)
+            return Response(ongoing_contract_serializer.data, status=status.HTTP_200_OK)
+
+        if tab == "closed":
+            my_closed_contracts = ContractModel.objects.filter(Q(status='대여 종료') & Q(user=user.id)).order_by('-id')
+            closed_contract_serializer = MyPageContractSerializer(my_closed_contracts, many=True)
+            return Response(closed_contract_serializer.data, status=status.HTTP_200_OK)
+
+        if tab == "my_items":
+            my_items = ItemModel.objects.filter(user=user.id).order_by('-id')
+            my_items_serialiizer = MyPageItemSerializer(my_items, many=True)
+            return Response(my_items_serialiizer.data, status=status.HTTP_200_OK)
+
+        if tab == "bookmarks":
+            my_bookmarks = BookmarkModel.objects.filter(user=user.id).order_by('-id')
+            my_bookmarks_serializer = MyBookmarkSerializer(my_bookmarks, many=True)
+            return Response(my_bookmarks_serializer.data, status=status.HTTP_200_OK)
+
+        return Response({"msg": "해당내역 없음"}, status=status.HTTP_204_NO_CONTENT)
+
+
+        
+        
+
+    
+
+        
