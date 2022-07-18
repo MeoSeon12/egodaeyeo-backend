@@ -16,12 +16,12 @@ SECRET_KEY = local_settings.SECRET['secret']
 class UserView(APIView):
     permission_classes = [permissions.AllowAny]
     
-    #TODO 회원정보 조회
-    # def get(self, request):
-    #     user = request.user
-    #     user_serializer = UserSerializer(user, context={"request": request})
+    # 회원정보 조회
+    def get(self, request, id):
+
+        user_image = UserModel.objects.filter(id=id).first().image.url
         
-    #     return Response(user_serializer.data, status=status.HTTP_200_OK)
+        return Response(user_image, status=status.HTTP_200_OK)
     
     #DONE 회원가입
     def post(self, request):
