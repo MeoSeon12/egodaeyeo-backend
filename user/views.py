@@ -58,7 +58,6 @@ class EgoTokenObtainPairView(TokenObtainPairView):
 class KakaoLoginView(APIView):
 
     def post(self, request):
-        # access_token = request.headers["Authorization"]
         email = request.data.get("email")
         nickname = request.data.get("nickname")
 
@@ -94,6 +93,4 @@ class KakaoLoginView(APIView):
             refresh = RefreshToken.for_user(new_user)
                 
             return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "회원가입 성공"}, status=status.HTTP_201_CREATED)
-
-            # return Response({'msg': 'test'},status=status.HTTP_201_CREATED)
 

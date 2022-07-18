@@ -1,3 +1,4 @@
+from dataclasses import fields
 from rest_framework import serializers
 from datetime import datetime
 from contract.models import Contract as ContractModel
@@ -5,9 +6,17 @@ from item.models import (
     Item as ItemModel,
     Category as CategoryModel,
     Review as ReviewModel,
-    Bookmark as BookmarkModel
+    Bookmark as BookmarkModel,
+    ItemImage as ItemImageModel,
 )
 
+
+class ItemImageSerializer(serializers.ModelSerializer):
+    
+    
+    class Meta:
+        model = ItemImageModel
+        fields = ["image"]
 
 # 아이템 페이지 직렬화
 class CategorySerializer(serializers.ModelSerializer):
@@ -20,6 +29,8 @@ class ItemSerializer(serializers.ModelSerializer):
     user_address = serializers.SerializerMethodField()
     item_bookmarks = serializers.SerializerMethodField()
     item_inquiries = serializers.SerializerMethodField()
+    # images = ItemImageSerializer(many=True, source='itemimage_set')
+    image = serializers.SerializerMethodField()
     
     def get_user_address(self, obj):
         #아이템 등록자 주소
@@ -33,10 +44,14 @@ class ItemSerializer(serializers.ModelSerializer):
         #아이템 문의 수
         return obj.inquiry_set.count()
     
+    def get_image(self, obj):
+        #아이템의 첫번째 이미지 한개
+        return obj.itemimage_set.first().image.url
     
     class Meta:
         model = ItemModel
-        fields = ["id", "section", "category", "title", "images", "price", "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
+        fields = ["id", "section", "category", "image", "title", "price", 
+                  "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
 
 
 
