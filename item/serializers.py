@@ -13,7 +13,6 @@ from item.models import (
 
 class ItemImageSerializer(serializers.ModelSerializer):
     
-    
     class Meta:
         model = ItemImageModel
         fields = ["image"]
@@ -53,6 +52,12 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = ["id", "section", "category", "image", "title", "price", 
                   "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
 
+class ContractSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = ContractModel
+        fields = ["id", "item", "user", "start_date", "end_date"]
+
 
 
 # 아이템 상세 페이지 직렬화
@@ -73,8 +78,8 @@ class DetailReviewSerializer(serializers.ModelSerializer):
         return nickname
 
     def get_period(self, obj):
-        period = ContractModel.objects.get(item=obj.item, user=obj.user)
-        period = str(period.end_date - period.start_date)
+        contract = ContractModel.objects.get(item=obj.item, user=obj.user)
+        period = str(contract.end_date - contract.start_date)
         
         # 대여 기간 계산
         if period.find('day') != -1:
@@ -110,7 +115,11 @@ class DetailReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReviewModel
-        fields = ["image", "nickname", "content", "created_at", "period"]
+        fields = ["image", "user", "item", "nickname", "content", "created_at", "star", "period"]
+
+    extra_kwargs = {
+            'star' : {'write_only': True}
+        }
 
 
 # 아이템 직렬화
