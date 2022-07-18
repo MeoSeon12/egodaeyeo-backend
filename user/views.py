@@ -18,10 +18,8 @@ from allauth.socialaccount.models import SocialAccount
 from user.jwt_claim_serializer import EgoTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.authentication import JWTAuthentication
-import local_settings
 from django.db.models import Q
 
-SECRET_KEY = local_settings.SECRET['secret']
 class UserView(APIView):
     permission_classes = [permissions.AllowAny]
     

@@ -3,9 +3,6 @@ from user.models import User as UserModel
 from item.serializers import MyPageItemSerializer
 from item.models import Bookmark as BookmarkModel
 
-VALID_EMAIL_LIST = ["naver.com", "gmail.com", "daum.net"]
-
-
 class UserSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
