@@ -115,22 +115,22 @@ class MyPageView(APIView):
         user = UserModel.objects.get(id=id)
 
         if tab == "ongoing":
-            my_ongoing_contracts = ContractModel.objects.filter(Q(status='대여 중') & Q(user=user.id))
+            my_ongoing_contracts = ContractModel.objects.filter(Q(status='대여 중') & Q(user=user.id)).order_by('-id')
             ongoing_contract_serializer = MyPageContractSerializer(my_ongoing_contracts, many=True)
             return Response(ongoing_contract_serializer.data, status=status.HTTP_200_OK)
 
         if tab == "closed":
-            my_closed_contracts = ContractModel.objects.filter(Q(status='대여 종료') & Q(user=user.id))
+            my_closed_contracts = ContractModel.objects.filter(Q(status='대여 종료') & Q(user=user.id)).order_by('-id')
             closed_contract_serializer = MyPageContractSerializer(my_closed_contracts, many=True)
             return Response(closed_contract_serializer.data, status=status.HTTP_200_OK)
 
         if tab == "my_items":
-            my_items = ItemModel.objects.filter(user=user.id)
+            my_items = ItemModel.objects.filter(user=user.id).order_by('-id')
             my_items_serialiizer = MyPageItemSerializer(my_items, many=True)
             return Response(my_items_serialiizer.data, status=status.HTTP_200_OK)
 
         if tab == "bookmarks":
-            my_bookmarks = BookmarkModel.objects.filter(user=user.id)
+            my_bookmarks = BookmarkModel.objects.filter(user=user.id).order_by('-id')
             my_bookmarks_serializer = MyBookmarkSerializer(my_bookmarks, many=True)
             return Response(my_bookmarks_serializer.data, status=status.HTTP_200_OK)
 
