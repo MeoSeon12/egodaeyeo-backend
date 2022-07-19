@@ -81,7 +81,7 @@ class DetailView(APIView):
         except:
             return Response({'error_msg': '아이템 정보가 없습니다'}, status=status.HTTP_404_NOT_FOUND)
 
-        login_id = request.user.id
+        login_id = request.GET.get('user_id', '')
         detail_serializer = DetailSerializer(item, context={'login_id': login_id})
 
         return Response(detail_serializer.data, status=status.HTTP_200_OK)
@@ -118,6 +118,23 @@ class DetailView(APIView):
             bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
             return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_201_CREATED)
 
+
+# 아이템 등록 페이지 뷰
+class ItemPostView(APIView):
+    permission_classes = [IsAddressOrReadOnly]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        categories = CategoryModel.objects.all().values('name')
+
+        return Response(categories, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        print(request.data)
+
+        return Response(status=status.HTTP_200_OK)
+        
+        
 class ReviewView(APIView):
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
@@ -170,5 +187,3 @@ class ContractView(APIView):
             return Response(contract_serializer.data, status=status.HTTP_200_OK)
     
         return Response(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
