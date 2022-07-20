@@ -12,6 +12,7 @@ from item.models import (
     Item as ItemModel,
     Category as CategoryModel,
     Bookmark as BookmarkModel,
+    ItemImage as ItemImageModel,
     Review as ReviewModel
 )
 
@@ -124,15 +125,56 @@ class ItemPostView(APIView):
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
 
+    # 업로드 페이지 뷰 (카테고리 데이터)
     def get(self, request):
         categories = CategoryModel.objects.all().values('name')
 
         return Response(categories, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        print(request.data)
 
-        return Response(status=status.HTTP_200_OK)
+    # 아이템 등록하기 기능
+    def post(self, request):
+
+        price = request.data['price']
+        time_unit = request.data['time']
+
+        # 가격 입력하지 않았을 경우
+        if price == '':
+            price = None
+
+        # 시간 단위 입력하지 않았을 경우
+        if time_unit == '기간':
+            time_unit = None
+
+        # 아이템 모델에 저장
+        item = ItemModel.objects.create(
+            section = request.data['section'],
+            title = request.data['title'],
+            content = request.data['content'],
+            time_unit = time_unit,
+            price = price,
+            user = UserModel.objects.get(id=request.user.id),
+            category = CategoryModel.objects.get(name=request.data['category']),
+            status = '대여 가능'
+        )
+
+        # 아이템 이미지 모델에 저장
+        try:    # 이미지가 있을 경우
+            images = request.data.pop('image')
+
+            for image in images:
+
+                ItemImageModel.objects.create(
+                    item = ItemModel.objects.get(id=item.id),
+                    image = image
+                )
+
+        except: # 이미지가 없을 경우
+            ItemImageModel.objects.create(
+                item = ItemModel.objects.get(id=item.id)
+            )
+
+        return Response(item.id, status=status.HTTP_200_OK)
         
         
 class ReviewView(APIView):
