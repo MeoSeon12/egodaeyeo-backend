@@ -77,6 +77,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5500',
+    'https://egodaeyeo.netlify.app'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -105,11 +106,9 @@ CORS_ALLOW_HEADERS = [
 
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5500',
+    'https://egodaeyeo.netlify.app',
 ]
 
-# CORS_ORIGIN_WHITELIST = [
-#     "http://127.0.0.1:5500", 
-# ]
 CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'egodaeyeo.urls'
@@ -191,7 +190,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
     'DEFAULT_PARSER_CLASSES': [ # request.data 속성에 액세스 할 때 사용되는 파서 지정
         'rest_framework.parsers.JSONParser',

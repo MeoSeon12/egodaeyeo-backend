@@ -16,9 +16,8 @@ class Item(models.Model):
     section = models.CharField("섹션", max_length=10, choices=(('빌려요', '빌려요'), ('빌려드려요', '빌려드려요')))
     title = models.CharField("제목", max_length=30)
     content = models.TextField("내용", max_length=300)
-    images = models.FileField("이미지", null=True, upload_to='develop/')
-    time_unit = models.CharField("시간 단위", max_length=5, choices=(('시간', '시간'), ('일', '일'), ('월', '월')), null=True)
-    price = models.PositiveIntegerField("가격", null=True)
+    time_unit = models.CharField("시간 단위", max_length=5, choices=(('시간', '시간'), ('일', '일'), ('월', '월')), null=True, blank=True)
+    price = models.PositiveIntegerField("가격", null=True, blank=True)
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField("생성일", auto_now_add=True)
@@ -30,6 +29,17 @@ class Item(models.Model):
         
     def __str__(self):
         return f"[아이템] {self.id} / {self.user.nickname} / {self.title} / {self.section}"
+
+
+class ItemImage(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    image = models.ImageField(default="../static/profile.jpg", upload_to='item/')
+
+    class Meta:
+        db_table = "item_images"
+
+    def __str__(self):
+        return f"[아이템 사진] {self.id} / {self.image} / {self.item.title}"
 
 
 class Bookmark(models.Model):

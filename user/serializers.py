@@ -1,17 +1,10 @@
+from pkg_resources import require
 from rest_framework import serializers
 from user.models import User as UserModel
-
-VALID_EMAIL_LIST = ["naver.com", "gmail.com", "daum.net"]
-
+from item.serializers import MyPageItemSerializer
+from item.models import Bookmark as BookmarkModel
 
 class UserSerializer(serializers.ModelSerializer):
-    
-    def validate(self, data):
-        if data.get("email", "").split('@')[-1] not in VALID_EMAIL_LIST:
-            raise serializers.ValidationError(
-                detail={"error": "naver, gmail, daum 이메일 주소만 사용 가능합니다."}
-            )
-        return data
     
     def create(self, validated_data):
         password = validated_data.pop("password")
@@ -34,35 +27,19 @@ class UserSerializer(serializers.ModelSerializer):
             
     class Meta:
         model = UserModel
-        fields = ["id", "nickname", "email", "password"]
+        fields = ["id","image", "nickname", "email", "password", "address"]
         
         extra_kwargs = {
-            'password' : {'write_only': True}
+            'password' : {'write_only': True},
+            'image' : {'required': False}
         }
 
-class KakaoUserSerializer(serializers.ModelSerializer):
-    
-    def create(self, validated_data):
-        user = UserModel(**validated_data)
-        user.save()
-        
-        return user
-    
-    def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            if key == "password":
-                instance.set_password(value)
-                continue
-            setattr(instance, key, value)
-            
-        instance.save()
-        
-        return instance
-            
+
+
+class MyBookmarkSerializer(serializers.ModelSerializer):
+    item = MyPageItemSerializer()
+   
     class Meta:
-        model = UserModel
-        fields = ["id", "nickname", "email", "password"]
+        model = BookmarkModel
+        fields = ["id", "item"]
         
-        # extra_kwargs = {
-        #     'password' : {'write_only': True}
-        # }
