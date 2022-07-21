@@ -53,35 +53,42 @@ class UserView(APIView):
     #회원정보 수정
     def put(self, request):
         user_id = request.user.id
-        data = request.data
-        image = request.data['image']
-        password = request.data['password']
-        current_pw = request.data['current_password']
         user = UserModel.objects.get(id=user_id)
-        social_user = SocialAccount.objects.filter(user=user).first()
-        
-        if social_user and password != "":
-            return Response({"social_error": "소셜회원은 비밀번호를 수정 하실 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if current_pw:
-            #현재 비밀번호와 입력한 현재비밀번호가 일치하지 않을시 return
-            if check_password(current_pw, user.password) == False:
-                return Response({"msg": "입력하신 현재 비밀번호가 일치하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        #image 수정안할시 예외처리
-        if image == 'undefined':
-            data = data.copy()
-            data.pop('image')
+        data = request.data
+
+        try:
+            image = request.data['image']
+            password = request.data['password']
+            current_pw = request.data['current_password']
+            social_user = SocialAccount.objects.filter(user=user).first()
             
-        #password Blank일시 예외처리
-        if password == "":
-            data = data.copy()
-            data.pop('password')
+            if social_user and password != "":
+                return Response({"social_error": "소셜회원은 비밀번호를 수정 하실 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
             
-        user_serializer = UserSerializer(user, data=data, partial=True, context={"request": request})    
-        if user_serializer.is_valid():
-            user_serializer.save()
-            return Response(user_serializer.data, status=status.HTTP_200_OK)
+            if current_pw:
+                #현재 비밀번호와 입력한 현재비밀번호가 일치하지 않을시 return
+                if check_password(current_pw, user.password) == False:
+                    return Response({"msg": "입력하신 현재 비밀번호가 일치하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            #image 수정안할시 예외처리
+            if image == 'undefined':
+                data = data.copy()
+                data.pop('image')
+                
+            #password Blank일시 예외처리
+            if password == "":
+                data = data.copy()
+                data.pop('password')
+                
+            user_serializer = UserSerializer(user, data=data, partial=True, context={"request": request})    
+            if user_serializer.is_valid():
+                user_serializer.save()
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
+        except:
+            user_serializer = UserSerializer(user, data=data, partial=True, context={"request": request})    
+            if user_serializer.is_valid():
+                user_serializer.save()
+                return Response(user_serializer.data, status=status.HTTP_200_OK)
         
         return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

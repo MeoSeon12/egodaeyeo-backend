@@ -19,7 +19,7 @@ from item.models import (
 
 class ItemPagination(PageNumberPagination): # 👈 PageNumberPagination 상속
     page_size = 12
-
+        
 class ItemListView(APIView, PaginationHandlerMixin):
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
@@ -44,7 +44,9 @@ class ItemListView(APIView, PaginationHandlerMixin):
         category_name = request.GET.get('category', "")
         # 섹션 Query Parameter로 가져오기
         section = request.GET.get('section', "")
-        
+        # 검색 결과 Query Parameter로 가져오기
+        search_value = request.GET.get('search', "")
+
         if category_name != "":
             category_query = Q(category__name=category_name)
             items = items.filter(category_query)
@@ -52,6 +54,10 @@ class ItemListView(APIView, PaginationHandlerMixin):
         if section != "":
             section_query = Q(section=section)
             items = items.filter(section_query)
+
+        if search_value != "":
+            search_query = Q(title__icontains=search_value)
+            items = items.filter(search_query)
             
         page = self.paginate_queryset(items)
         
@@ -66,7 +72,6 @@ class ItemListView(APIView, PaginationHandlerMixin):
             'items': item_serializer.data,
         }
         return Response(data, status=status.HTTP_200_OK)
-        
 
 # 아이템 상세페이지 뷰
 class DetailView(APIView):
