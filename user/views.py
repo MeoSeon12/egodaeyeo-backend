@@ -55,12 +55,13 @@ class UserView(APIView):
         user_id = request.user.id
         user = UserModel.objects.get(id=user_id)
         data = request.data
-
+            
         try:
             image = request.data['image']
             password = request.data['password']
             current_pw = request.data['current_password']
             social_user = SocialAccount.objects.filter(user=user).first()
+
             
             if social_user and password != "":
                 return Response({"social_error": "소셜회원은 비밀번호를 수정 하실 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)

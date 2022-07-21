@@ -1,10 +1,7 @@
-from dataclasses import fields
 from rest_framework import serializers
 from item.serializers import MyPageItemSerializer
 from contract.models import Contract as ContractModel
-
-from django.utils import timezone
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class MyPageContractSerializer(serializers.ModelSerializer):
     item = MyPageItemSerializer()
