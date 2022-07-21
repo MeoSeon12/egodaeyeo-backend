@@ -61,7 +61,7 @@ class UserView(APIView):
         social_user = SocialAccount.objects.filter(user=user).first()
         
         if social_user and password != "":
-            return Response({"social_error": "소셜회원은 비밀번호를 수정 하실 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"social_error": "소셜계정은 비밀번호를 설정 하실 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
         
         if current_pw:
             #현재 비밀번호와 입력한 현재비밀번호가 일치하지 않을시 return

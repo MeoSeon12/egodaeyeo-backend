@@ -1,4 +1,3 @@
-from pkg_resources import require
 from rest_framework import serializers
 from user.models import User as UserModel
 from item.serializers import MyPageItemSerializer
