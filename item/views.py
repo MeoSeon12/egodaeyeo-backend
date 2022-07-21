@@ -40,13 +40,18 @@ class ItemListView(APIView, PaginationHandlerMixin):
         except:
             pass
         
+        # 검색 입력값 Query Parameter로 가져오기
+        search_value = request.GET.get('search', "")
         # 카테고리명 Query Parameter로 가져오기
         category_name = request.GET.get('category', "")
         # 섹션 Query Parameter로 가져오기
         section = request.GET.get('section', "")
-        # 검색 결과 Query Parameter로 가져오기
-        search_value = request.GET.get('search', "")
 
+        if search_value != "":
+            search_query = Q(title__icontains=search_value)
+            items = items.filter(search_query)
+            
+            
         if category_name != "":
             category_query = Q(category__name=category_name)
             items = items.filter(category_query)
@@ -55,10 +60,7 @@ class ItemListView(APIView, PaginationHandlerMixin):
             section_query = Q(section=section)
             items = items.filter(section_query)
 
-        if search_value != "":
-            search_query = Q(title__icontains=search_value)
-            items = items.filter(search_query)
-            
+
         page = self.paginate_queryset(items)
         
         if page is not None:
@@ -67,10 +69,12 @@ class ItemListView(APIView, PaginationHandlerMixin):
             item_serializer = ItemSerializer(items, many=True, context={"request": request})
         
         category_serializer = CategorySerializer(categories, many=True, context={"request": request})
+        
         data = {
             'categories': category_serializer.data,
             'items': item_serializer.data,
         }
+        
         return Response(data, status=status.HTTP_200_OK)
 
 # 아이템 상세페이지 뷰
