@@ -122,7 +122,7 @@ class DetailView(APIView):
 
 # 아이템 등록 페이지 뷰
 class ItemPostView(APIView):
-    permission_classes = [IsAddressOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     # 업로드 페이지 뷰 (카테고리 데이터)
@@ -130,7 +130,6 @@ class ItemPostView(APIView):
         categories = CategoryModel.objects.all().values('name')
 
         return Response(categories, status=status.HTTP_200_OK)
-
 
     # 아이템 등록하기 기능
     def post(self, request):
@@ -175,6 +174,46 @@ class ItemPostView(APIView):
             )
 
         return Response(item.id, status=status.HTTP_200_OK)
+
+
+# 물품 수정 페이지
+class ItemUpdateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    # 페이지 로드 데이터 얻기
+    def get(self, request, item_id):
+
+        # 데이터 가져오기
+        images_data = ItemImageModel.objects.filter(item=item_id).values('image')
+        item_data = ItemModel.objects.get(id=item_id)
+        category_data = CategoryModel.objects.all().values('name')
+
+        # 이미지 데이터 다듬기
+        image_list = []
+        for image_data in images_data:
+            image_list.append(image_data['image'])
+
+        # 아이템 데이터 다듬기
+        item_data = {
+            'section': item_data.section,
+            'category': item_data.category.name,
+            'time_unit': item_data.time_unit,
+            'price': item_data.price,
+            'title': item_data.title,
+            'content': item_data.content,
+        }
+
+        # 카테고리 데이터 다듬기
+        category_list = []
+        for category in category_data:
+            category_list.append(category['name'])
+
+        return Response({
+                'image_list': image_list,
+                'item_data': item_data,
+                'category_list': category_list,
+            }, status=status.HTTP_200_OK)
         
         
 class ReviewView(APIView):

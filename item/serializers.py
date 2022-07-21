@@ -154,10 +154,12 @@ class DetailSerializer(serializers.ModelSerializer):
     def get_user(self, obj):
         user = {}
         image = obj.user.image.url
+        id =obj.user.id
         nickname = obj.user.nickname
         address = obj.user.address
         score = obj.user.score
         user['image'] = image
+        user['id'] = id
         user['nickname'] = nickname
         user['address'] = address
         user['score'] = score
