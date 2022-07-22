@@ -243,12 +243,6 @@ class ItemUpdateView(APIView):
 
         # 수정사항 반영
         target_item = ItemModel.objects.get(id=item_id)
-        target_item.section = request.data['section']
-        target_item.category = category
-        target_item.status = request.data['status']
-        target_item.title = request.data['title']
-        target_item.content = request.data['content']
-        target_item.save()
 
         # 시간, 가격 null 처리
         if request.data['time'] == '-- 기간 --':
@@ -260,6 +254,13 @@ class ItemUpdateView(APIView):
             target_item.price = None
         else:
             target_item.price = request.data['price']
+
+        target_item.section = request.data['section']
+        target_item.category = category
+        target_item.status = request.data['status']
+        target_item.title = request.data['title']
+        target_item.content = request.data['content']
+        target_item.save()
 
         # 저장할 이미지 DB 저장
         save_images = request.data.getlist('save_image')
