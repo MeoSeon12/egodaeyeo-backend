@@ -151,7 +151,7 @@ class ItemPostView(APIView):
             price = None
 
         # 시간 단위 입력하지 않았을 경우
-        if time_unit == '기간':
+        if time_unit == '-- 기간 --':
             time_unit = None
 
         # 아이템 모델에 저장
