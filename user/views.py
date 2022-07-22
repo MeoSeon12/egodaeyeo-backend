@@ -115,20 +115,22 @@ class KakaoLoginView(APIView):
             # 기존에 가입된 유저와 쿼리해서 존재하면서, socialaccount에도 존재하면 로그인
             user = UserModel.objects.get(email=email)
             social_user = SocialAccount.objects.filter(user=user).first()
-            #로그인
+            print(social_user.provider)
+            
+            
+            # 로그인
             if social_user:
-                refresh = RefreshToken.for_user(user)
+                # 소셜계정이 카카오가 아닌 다른 소셜계정으로 가입한 유저일때(구글, 네이버)
+                if social_user.provider != "kakao":
+                    return Response({"error": "카카오로 가입한 유저가 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
                 
+                refresh = RefreshToken.for_user(user)
                 return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "로그인 성공"}, status=status.HTTP_200_OK)
             
             # 동일한 이메일의 유저가 있지만, social계정이 아닐때 
             if social_user is None:
-                return Response({"error": "email exists but not social user"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "이메일이 존재하지만, 소셜유저가 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
             
-            # 소셜계정이 카카오가 아닌 다른 소셜계정으로 가입했을때
-            if social_user.provider != "kakao":
-                return Response({"error": "no matching social type"}, status=status.HTTP_400_BAD_REQUEST)
-    
         except UserModel.DoesNotExist:
             # 기존에 가입된 유저가 없으면 새로 가입
             new_user = UserModel.objects.create(
@@ -138,6 +140,8 @@ class KakaoLoginView(APIView):
             #소셜account에도 생성
             SocialAccount.objects.create(
                 user_id=new_user.id,
+                uid=new_user.email,
+                provider="kakao",
             )
 
             refresh = RefreshToken.for_user(new_user)
