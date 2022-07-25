@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'user',
     'item',
     'help',
@@ -63,6 +64,15 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.kakao',
     
 ]
+
+WSGI_APPLICATION = 'egodaeyeo.wsgi.application'
+ASGI_APPLICATION = 'egodaeyeo.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default' : {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # CORS
@@ -129,7 +139,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'egodaeyeo.wsgi.application'
+
 
 
 # Database
