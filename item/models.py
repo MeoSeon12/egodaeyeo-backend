@@ -33,7 +33,7 @@ class Item(models.Model):
 
 class ItemImage(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    image = models.ImageField(default="../static/default_item.jpg", upload_to='item/')
+    image = models.ImageField(upload_to='item/')
 
     class Meta:
         db_table = "item_images"

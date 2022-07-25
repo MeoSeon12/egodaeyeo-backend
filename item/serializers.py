@@ -48,8 +48,12 @@ class ItemSerializer(serializers.ModelSerializer):
     
     def get_image(self, obj):
         #아이템의 첫번째 이미지 한개
-        return obj.itemimage_set.first().image.url
-    
+        try:
+            main_image = obj.itemimage_set.first().image.url
+            return main_image
+        except:
+            return None
+        
     class Meta:
         model = ItemModel
         fields = ["id", "section", "category", "image", "title", "price", 
@@ -61,7 +65,11 @@ class MyPageItemSerializer(serializers.ModelSerializer):
     
     def get_image(self, obj):
         #아이템의 첫번째 이미지 한개
-        return obj.itemimage_set.first().image.url
+        try:
+            main_image = obj.itemimage_set.first().image.url
+            return main_image
+        except:
+            return None
     
     class Meta:
         model = ItemModel

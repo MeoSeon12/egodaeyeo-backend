@@ -115,8 +115,6 @@ class KakaoLoginView(APIView):
             # 기존에 가입된 유저와 쿼리해서 존재하면서, socialaccount에도 존재하면 로그인
             user = UserModel.objects.get(email=email)
             social_user = SocialAccount.objects.filter(user=user).first()
-            print(social_user.provider)
-            
             
             # 로그인
             if social_user:
