@@ -1,7 +1,10 @@
+from datetime import datetime
 import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
+import locale
 
+locale.setlocale(locale.LC_TIME, 'ko_KR')
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.room_group_name = 'test'
@@ -26,10 +29,13 @@ class ChatConsumer(WebsocketConsumer):
             }
         )
         
+        
     def chat_message(self,event):
         message = event['message']
+        now_time = datetime.now().strftime('%p %I:%M')
         
         self.send(text_data = json.dumps({
             'type': 'chat',
-            'message': message
+            'message': message,
+            'time': now_time
         }))
