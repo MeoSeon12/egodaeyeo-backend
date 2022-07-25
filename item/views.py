@@ -77,11 +77,11 @@ class ItemListView(APIView, PaginationHandlerMixin):
         
         return Response(data, status=status.HTTP_200_OK)
 
-# 아이템 상세페이지 뷰
+# 물품 상세페이지 뷰
 class DetailView(APIView):
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
-
+    
     # 페이지 접속시
     def get(self, request, item_id):
         
@@ -129,7 +129,16 @@ class DetailView(APIView):
             return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_201_CREATED)
 
 
-# 아이템 등록 페이지 뷰
+    # 게시글 삭제
+    def delete(self, request, item_id):
+
+        item_obj = ItemModel.objects.get(id=item_id)
+        item_obj.delete()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+# 물품 등록 페이지 뷰
 class ItemPostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -140,7 +149,7 @@ class ItemPostView(APIView):
 
         return Response(categories, status=status.HTTP_200_OK)
 
-    # 아이템 등록하기 기능
+    # 물품 등록하기 기능
     def post(self, request):
 
         price = request.data['price']
@@ -151,7 +160,7 @@ class ItemPostView(APIView):
             price = None
 
         # 시간 단위 입력하지 않았을 경우
-        if time_unit == '기간':
+        if time_unit == '-- 기간 --':
             time_unit = None
 
         # 아이템 모델에 저장
@@ -194,14 +203,15 @@ class ItemUpdateView(APIView):
     def get(self, request, item_id):
 
         # 데이터 가져오기
-        images_data = ItemImageModel.objects.filter(item=item_id).values('image')
+        images_data = ItemImageModel.objects.filter(item=item_id).values()
         item_data = ItemModel.objects.get(id=item_id)
         category_data = CategoryModel.objects.all().values('name')
 
         # 이미지 데이터 다듬기
         image_list = []
         for image_data in images_data:
-            image_list.append(image_data['image'])
+            del image_data['item_id']
+            image_list.append(image_data)
 
         # 아이템 데이터 다듬기
         item_data = {
@@ -209,6 +219,7 @@ class ItemUpdateView(APIView):
             'category': item_data.category.name,
             'time_unit': item_data.time_unit,
             'price': item_data.price,
+            'status': item_data.status,
             'title': item_data.title,
             'content': item_data.content,
         }
@@ -223,6 +234,46 @@ class ItemUpdateView(APIView):
                 'item_data': item_data,
                 'category_list': category_list,
             }, status=status.HTTP_200_OK)
+
+    # 수정하기
+    def put(self, request, item_id):
+
+        # 카테고리 ID 조회
+        category = CategoryModel.objects.get(name=request.data['category'])
+
+        # 수정사항 반영
+        target_item = ItemModel.objects.get(id=item_id)
+
+        # 시간, 가격 null 처리
+        if request.data['time'] == '-- 기간 --':
+            target_item.time_unit = None
+        else:
+            target_item.time_unit = request.data['time']
+
+        if request.data['price'] == '':
+            target_item.price = None
+        else:
+            target_item.price = request.data['price']
+
+        target_item.section = request.data['section']
+        target_item.category = category
+        target_item.status = request.data['status']
+        target_item.title = request.data['title']
+        target_item.content = request.data['content']
+        target_item.save()
+
+        # 저장할 이미지 DB 저장
+        save_images = request.data.getlist('save_image')
+        for save_image in save_images:
+            item_obj = ItemModel.objects.get(id=item_id)
+            ItemImageModel.objects.create(item=item_obj, image=save_image)
+
+        # 삭제할 이미지 DB 삭제
+        delete_images = request.data.getlist('delete_image')
+        for delete_image in delete_images:
+            ItemImageModel.objects.get(id=delete_image).delete()
+
+        return Response(status=status.HTTP_200_OK)
         
         
 class ReviewView(APIView):
