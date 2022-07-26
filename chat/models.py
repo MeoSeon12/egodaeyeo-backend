@@ -13,7 +13,7 @@ class ChatRoom(models.Model):
         db_table = "chatrooms"
         
     def __str__(self):
-        return f"[채팅방] {self.item.title} / {self.user.nickname}"
+        return f"[채팅방] {self.item.title} / {self.receiver.nickname} / {self.sender.nickname}"
 
 
 class ChatMessage(models.Model):

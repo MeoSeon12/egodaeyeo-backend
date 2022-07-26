@@ -28,7 +28,7 @@ class UserManager(BaseUserManager):
 # 커스텀 유저 모델
 class User(AbstractBaseUser):
     email = models.EmailField("이메일", max_length=50, unique=True)
-    nickname = models.CharField("닉네임", max_length=15, unique=True)
+    nickname = models.CharField("닉네임", max_length=10, unique=True)
     password = models.CharField("비밀번호", max_length=256)
     address = models.TextField("주소", max_length=256)
     image = models.ImageField("이미지", default="../static/default_profile.jpg", upload_to='profile/')
