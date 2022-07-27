@@ -10,13 +10,16 @@ locale.setlocale(locale.LC_TIME, 'ko_KR')
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     time = serializers.SerializerMethodField()
-    
+    date = serializers.SerializerMethodField()
+
     def get_time(self, obj):
         return obj.created_at.strftime('%p %I:%M')
-
+    
+    def get_date(self, obj):
+        return obj.created_at.strftime('%Y년 %m월 %d일 %A')
     class Meta:
         model = ChatMessageModel
-        fields = ['id', 'time', 'content', 'is_read', 'room', 'user']
+        fields = ['id', 'time', 'date', 'content', 'is_read', 'room', 'user']
 
 class ChatSerializer(serializers.ModelSerializer):
     receiver = serializers.SerializerMethodField()
