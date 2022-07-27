@@ -55,12 +55,16 @@ class ChatConsumer(AsyncConsumer):
         
         other_user_chat_room = f'user_chatroom_{receiver_id}'
         self_user = sender
+
+        now_date = datetime.now().strftime('%Y년 %m월 %d일 %A')
         now_time = datetime.now().strftime('%p %I:%M')
+
         response = {
             'message': content,
             'sender': self_user.id,
             'room_id': room_id,
-            'time': now_time
+            'date': now_date,
+            'time': now_time,
         }
         
         print('아덜채팅', other_user_chat_room)
