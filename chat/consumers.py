@@ -35,6 +35,7 @@ class ChatConsumer(AsyncConsumer):
         sender_id = received_data.get('sender')
         receiver_id = received_data.get('receiver')
         room_id = received_data.get('room_id')
+        item_id = received_data.get('item_id')
 
         if not content:
             print('Error:: empty message')
@@ -65,9 +66,9 @@ class ChatConsumer(AsyncConsumer):
             'room_id': room_id,
             'date': now_date,
             'time': now_time,
+            'item_id': item_id,
         }
         
-        print('아덜채팅', other_user_chat_room)
         #상대방 채팅창에 send
         await self.channel_layer.group_send(
             other_user_chat_room,
@@ -77,7 +78,6 @@ class ChatConsumer(AsyncConsumer):
             }
         )
 
-        print('셀프채팅',self.chat_room)
         #내 채팅창에 send
         await self.channel_layer.group_send(
             self.chat_room,
@@ -92,7 +92,6 @@ class ChatConsumer(AsyncConsumer):
 
 
     async def chat_message(self, event):
-        # print('chat_message', event)
         await self.send({
             'type': 'websocket.send',
             'text': event['text'],
@@ -118,5 +117,5 @@ class ChatConsumer(AsyncConsumer):
         return obj
 
     @database_sync_to_async
-    def create_chat_message(self, room, sender, content): 
+    def create_chat_message(self, room, sender, content):
         ChatMessage.objects.create(room=room, user=sender, content=content)

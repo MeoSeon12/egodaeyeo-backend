@@ -5,8 +5,6 @@ from chat.models import (
 )
 import locale
 locale.setlocale(locale.LC_TIME, 'ko_KR')
-# now_time = datetime.now().strftime('%p %I:%M')
-
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     time = serializers.SerializerMethodField()
@@ -42,11 +40,15 @@ class ChatSerializer(serializers.ModelSerializer):
 class ChatRoomSerializer(serializers.ModelSerializer):
     chat_messages = ChatMessageSerializer(many=True, source='chatmessage_set')
     title = serializers.SerializerMethodField()
+    item = serializers.SerializerMethodField()
     receiver = serializers.SerializerMethodField()
     sender = serializers.SerializerMethodField()
 
     def get_title(self, obj):
         return obj.item.title
+
+    def get_item(self, obj):
+        return obj.item.id
     
     def get_receiver(self, obj):
         nickname = obj.receiver.nickname
@@ -60,4 +62,4 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChatRoomModel
-        fields = ['id', 'title', 'sender', 'receiver', 'chat_messages']
+        fields = ['id', 'title', 'item', 'sender', 'receiver', 'chat_messages']
