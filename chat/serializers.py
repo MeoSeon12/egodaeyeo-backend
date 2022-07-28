@@ -42,6 +42,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
     item_status = serializers.SerializerMethodField()
+    contract_status = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
     inquirer = serializers.SerializerMethodField()
 
@@ -54,6 +55,16 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     def get_item_status(self, obj):
         return obj.item.status
     
+    def get_contract_status(self, obj):
+        contracts = obj.item.contract_set.values()
+        contract_list = [i for i in contracts]
+        
+        if contract_list != []:
+            contract_status = contract_list[0]['status']
+            
+            return contract_status
+
+        
     def get_author(self, obj):
         nickname = obj.author.nickname
         id = obj.author.id
@@ -66,4 +77,4 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChatRoomModel
-        fields = ['id', 'title', 'item', 'item_status', 'inquirer', 'author', 'chat_messages']
+        fields = ['id', 'title', 'item', 'item_status', 'contract_status', 'inquirer', 'author', 'chat_messages']

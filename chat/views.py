@@ -21,6 +21,13 @@ class ChatView(APIView):
 
         my_chat_rooms_serializer = ChatSerializer(my_chat_rooms, many=True)
         
+        #채팅방 불러올시 is_read조회
+        # for my_chat_room in my_chat_rooms:
+        #     other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=my_chat_room))
+        #     print("상대 채팅",other_chats)
+        #     for other_chat in other_chats:
+        #         print("각채팅방의 채팅들의 is_read",other_chat.is_read)
+        
         return Response(my_chat_rooms_serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, item_id):
@@ -47,8 +54,21 @@ class ChatView(APIView):
 
 class ChatRoomView(APIView):
     
+    #각 채팅방 data 조회
     def get(self, request, room_id):
-        chat_room = ChatRoomModel.objects.get(id=room_id)
-        chat_room_serializer = ChatRoomSerializer(chat_room)
-
+        user = request.user
+        
+        try:
+            chat_room = ChatRoomModel.objects.get(id=room_id)
+            chat_room_serializer = ChatRoomSerializer(chat_room)
+            
+            #채팅방 접속시, 채팅읽음 상태 만드는 로직
+            other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=chat_room))
+            for other_chat in other_chats:
+                other_chat.is_read = True
+                other_chat.save()
+                
+        except ChatRoomModel.DoesNotExist:
+            return Response({"msg": "채팅방이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+        
         return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
