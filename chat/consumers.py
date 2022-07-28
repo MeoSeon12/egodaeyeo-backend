@@ -1,6 +1,6 @@
 from datetime import datetime
 import json
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 import locale
 from channels.consumer import AsyncConsumer
@@ -11,33 +11,39 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 locale.setlocale(locale.LC_TIME, 'ko_KR')
 
-class ChatConsumer(AsyncConsumer):
+class ChatConsumer(AsyncWebsocketConsumer):
     
-    async def websocket_connect(self, event):
-        
-        #url에 user_id를 받아서 가져온다.
-        user_id = self.scope['url_route']['kwargs']['user_id']
-        chat_room = f'user_chatroom_{user_id}'
-        self.chat_room = chat_room
-        
+    async def connect(self):
+        #url에 room_id를 받아서 가져온다.
+        self.room_id = self.scope['url_route']['kwargs']['room_id']
+        self.room_group_name = 'chat_%s' % self.room_id
+        print("그룹네임", self.room_group_name)
+
+        # Join room group
         await self.channel_layer.group_add(
-            chat_room,
+            self.room_group_name,
             self.channel_name
         )
-        await self.send({
-            'type': 'websocket.accept'
-        })
+        await self.accept()
 
-    async def websocket_receive(self, event):
+    async def disconnect(self, close_code):
+        print("disconnect", self.room_group_name)
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
         
-        received_data = json.loads(event['text'])
-        content = received_data.get('message')
+        received_data = json.loads(text_data)
+        print("리시브",received_data)
+        message = received_data.get('message')
         sender_id = received_data.get('sender')
         receiver_id = received_data.get('receiver')
         room_id = received_data.get('room_id')
         item_id = received_data.get('item_id')
 
-        if not content:
+        if not message:
             print('Error:: empty message')
             return False
 
@@ -52,16 +58,15 @@ class ChatConsumer(AsyncConsumer):
         if not room_obj:
             print('Error:: Header id is incorrect')
 
-        await self.create_chat_message(room_obj, sender, content)
+        await self.create_chat_message(room_obj, sender, message)
         
-        other_user_chat_room = f'user_chatroom_{receiver_id}'
         self_user = sender
 
         now_date = datetime.now().strftime('%Y년 %m월 %d일 %A')
         now_time = datetime.now().strftime('%p %I:%M')
 
         response = {
-            'message': content,
+            'message': message,
             'sender': self_user.id,
             'room_id': room_id,
             'date': now_date,
@@ -69,35 +74,35 @@ class ChatConsumer(AsyncConsumer):
             'item_id': item_id,
         }
         
-        #상대방 채팅창에 send
+        # 현재그룹에 send
         await self.channel_layer.group_send(
-            other_user_chat_room,
+            self.room_group_name,
             {
                 'type': 'chat_message',
                 'text': json.dumps(response)
             }
         )
-
-        #내 채팅창에 send
-        await self.channel_layer.group_send(
-            self.chat_room,
-            {
-                'type': 'chat_message',
-                'text': json.dumps(response)
-            }
-        )
-
-    async def websocket_disconnect(self, event):
-        print('disconnect', event)
-
 
     async def chat_message(self, event):
-        await self.send({
-            'type': 'websocket.send',
-            'text': event['text'],
-        })
-    
-    
+        text = json.loads(event['text'])
+        message = text['message']
+        now_time = text['time']
+        now_date = text['date']
+        room_id = text['room_id']
+        item_id = text['item_id']
+        sender = text['sender']
+
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({
+            'message': message,
+            'time': now_time,
+            'date': now_date,
+            'room_id': room_id,
+            'item_id': item_id,
+            'sender': sender
+        }))
+
+   
     @database_sync_to_async
     def get_user_object(self, user_id):
         qs = User.objects.filter(id=user_id)
