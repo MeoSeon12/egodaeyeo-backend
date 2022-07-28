@@ -152,10 +152,6 @@ class ContractConsumer(AsyncConsumer):
         room_id = received_data.get('room_id')
         item_id = received_data.get('item_id')
 
-        if not content:
-            print('Error:: empty message')
-            return False
-
         sender = await self.get_user_object(sender_id)
         receiver = await self.get_user_object(receiver_id)
         room_obj = await self.get_chatroom(room_id)
@@ -167,7 +163,7 @@ class ContractConsumer(AsyncConsumer):
         if not room_obj:
             print('Error:: Header id is incorrect')
 
-        await self.create_chat_message(room_obj, sender, content)
+        await self.create_chat_message(room_obj, sender)
         
         other_user_chat_room = f'user_chatroom_{receiver_id}'
         self_user = sender
@@ -232,6 +228,6 @@ class ContractConsumer(AsyncConsumer):
         return obj
 
     @database_sync_to_async
-    def create_chat_message(self, room, sender, content):
-        ChatMessage.objects.create(room=room, user=sender, content=content)
+    def create_chat_message(self, room, sender):
+        ChatMessage.objects.create(room=room, user=sender, application=True)
 

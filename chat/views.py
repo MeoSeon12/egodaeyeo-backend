@@ -17,28 +17,28 @@ class ChatView(APIView):
 
     def get(self, request):
         user = request.user
-        my_chat_rooms = ChatRoomModel.objects.filter(Q(sender=user.id) | Q(receiver=user.id))
+        my_chat_rooms = ChatRoomModel.objects.filter(Q(inquirer=user.id) | Q(author=user.id))
 
         my_chat_rooms_serializer = ChatSerializer(my_chat_rooms, many=True)
         
         return Response(my_chat_rooms_serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, item_id):
-        sender = request.user
+        inquirer = request.user
         item = ItemModel.objects.get(id=item_id)
-        receiver = item.user
+        author = item.user
         
         try:
             #존재하는 채팅방이 있다면, 채팅방을 가져온다.
-            chat_room = ChatRoomModel.objects.get(sender=sender.id, receiver=receiver.id, item=item.id)
+            chat_room = ChatRoomModel.objects.get(inquirer=inquirer.id, author=author.id, item=item.id)
             
             return Response({"msg": "채팅방 불러오기!"}, status=status.HTTP_200_OK)
         
         except ChatRoomModel.DoesNotExist:
             #존재하는 채팅방이 없다면, 새롭게 생성
             ChatRoomModel.objects.create(
-                sender=sender, 
-                receiver=receiver, 
+                inquirer=inquirer, 
+                author=author, 
                 item=item
             )
             
