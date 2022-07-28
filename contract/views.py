@@ -27,7 +27,6 @@ class ContractView(APIView):
         item = ItemModel.objects.get(id=item_id)
         
         try:
-            print("여기로들어오아")
             contract = ContractModel.objects.get(item=item, user=user_id)
             if contract:
                 return Response({"msg": "이미 대여신청한 물품입니다."})
@@ -52,13 +51,23 @@ class ContractView(APIView):
     #대여신청 내역 수락 클릭시
     def put(self, request, item_id):
         user_id = request.user.id
-        item = ItemModel.objects.get(id=item_id, user=user_id)
+        status_str = request.data.get('status')
 
-        contract = ContractModel.objects.get(item=item)
-        contract.status = "대여 중"
-        contract.save()
+        try:
+            #아이템 status 변경
+            item = ItemModel.objects.get(id=item_id, user=user_id)
+            item.status = status_str
+            item.save()
+            
+            #계약 status 변경 
+            contract = ContractModel.objects.get(item=item)
+            contract.status = status_str
+            contract.save()
+        except:
+            return Response({"msg": "계약 수정 실패"})
         
-        return Response({"msg": "대여 신청 수락"}, status=status.HTTP_200_OK)
+        return Response({"msg": "계약 수정 완료"}, status=status.HTTP_200_OK)
+        
     
     #대여신청 거절 클릭시
     def delete(self, request, item_id):
@@ -68,4 +77,4 @@ class ContractView(APIView):
         
         contract.delete()
         
-        return Response({"msg": "대여 신청 삭제"}, status=status.HTTP_200_OK)
+        return Response({"msg": "대여 신청 거절완료"}, status=status.HTTP_200_OK)

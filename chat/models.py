@@ -5,23 +5,27 @@ from item.models import Item as ItemModel
 
 
 class ChatRoom(models.Model):
-    sender = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, related_name='sender')
-    receiver = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, related_name='receiver')
+    inquirer = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, related_name='inquirer')
+    author = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, related_name='author')
     item = models.ForeignKey(ItemModel, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         db_table = "chatrooms"
         
     def __str__(self):
-        return f"[채팅방] {self.item.title} / {self.receiver.nickname} / {self.sender.nickname}"
+        return f"[채팅방] {self.item.title} / {self.author.nickname} / {self.inquirer.nickname}"
 
 
 class ChatMessage(models.Model):
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
     user = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True)
-    content = models.TextField("내용", max_length=1000)
+    content = models.TextField("내용", max_length=1000, blank=True)
     is_read = models.BooleanField("읽음/안읽음", default=False)
     created_at = models.DateTimeField("생성시간", auto_now_add=True)
+    application = models.BooleanField("신청", default=False)
     
     class Meta:
         db_table = "chat_messages"
+        
+        
+        
