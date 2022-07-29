@@ -8,6 +8,7 @@ from item.models import (
     Review as ReviewModel,
     Bookmark as BookmarkModel,
     ItemImage as ItemImageModel,
+    Review as ReviewModel
 )
 
 
@@ -45,7 +46,7 @@ class ItemSerializer(serializers.ModelSerializer):
     
     def get_item_inquiries(self, obj):
         #아이템 문의 수
-        return obj.inquiry_set.count()
+        return obj.chatroom_set.count()
     
     def get_image(self, obj):
         #아이템의 첫번째 이미지 한개
@@ -170,7 +171,8 @@ class DetailSerializer(serializers.ModelSerializer):
         user['id'] = id
         user['nickname'] = nickname
         user['address'] = address
-        user['score'] = score
+        user_review_count = ReviewModel.objects.filter(item__user=obj.user.id).count()
+        user['score'] = score / user_review_count
 
         return user
 

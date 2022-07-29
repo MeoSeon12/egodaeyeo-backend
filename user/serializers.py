@@ -4,7 +4,7 @@ from item.serializers import MyPageItemSerializer
 from item.models import Bookmark as BookmarkModel
 
 class UserSerializer(serializers.ModelSerializer):
-    
+
     def create(self, validated_data):
         password = validated_data.pop("password")
         user = UserModel(**validated_data)
