@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from datetime import datetime
 from contract.models import Contract as ContractModel
+from chat.models import ChatRoom as ChatRoomModel
 from item.models import (
     Item as ItemModel,
     Category as CategoryModel,
@@ -57,7 +58,7 @@ class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModel
         fields = ["id", "section", "category", "image", "title", "price", 
-                  "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
+                "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
 
 class MyPageItemSerializer(serializers.ModelSerializer):
     # images = ItemImageSerializer(many=True, source='itemimage_set')
@@ -155,7 +156,7 @@ class DetailSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
     is_bookmark = serializers.SerializerMethodField()
     bookmark_length = serializers.SerializerMethodField()
-    inquiry_length = serializers.SerializerMethodField()
+    chatroom_length = serializers.SerializerMethodField()
     reviews = DetailReviewSerializer(many=True, source='review_set')
 
     def get_user(self, obj):
@@ -239,14 +240,14 @@ class DetailSerializer(serializers.ModelSerializer):
         bookmarks = obj.bookmark_set
         return bookmarks.count()
 
-    def get_inquiry_length(self, obj):
-        inquiries = obj.inquiry_set
-        return inquiries.count()
+    def get_chatroom_length(self, obj):
+        chatrooms = obj.chatroom_set
+        return chatrooms.count()
 
 
     class Meta:
         model = ItemModel
         fields = ["id", "user", "section", "category", "status", "remain_time", "title", "images",
                     "content", "time_unit", "price", "created_at", "updated_at",
-                    "is_bookmark", "bookmark_length", "inquiry_length", "reviews"]
+                    "is_bookmark", "bookmark_length", "chatroom_length", "reviews"]
 
