@@ -42,6 +42,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
     item_status = serializers.SerializerMethodField()
+    is_reviewed = serializers.SerializerMethodField()
     contract_status = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
     inquirer = serializers.SerializerMethodField()
@@ -64,7 +65,12 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             
             return contract_status
 
+    def get_is_reviewed(self, obj):
+        reviews = obj.item.review_set.values()
+        review_authors = [review['user_id'] for review in reviews]
         
+        return obj.inquirer.id in review_authors
+
     def get_author(self, obj):
         nickname = obj.author.nickname
         id = obj.author.id
@@ -77,4 +83,4 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChatRoomModel
-        fields = ['id', 'title', 'item', 'item_status', 'contract_status', 'inquirer', 'author', 'chat_messages']
+        fields = ['id', 'title', 'item', 'item_status', 'is_reviewed', 'contract_status', 'inquirer', 'author', 'chat_messages']
