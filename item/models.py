@@ -51,17 +51,6 @@ class Bookmark(models.Model):
         
     def __str__(self):
         return f"[북마크] {self.id} / {self.user.nickname} / {self.item} 북마크"
-        
-
-class Inquiry(models.Model):
-    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = "inquiries"
-        
-    def __str__(self):
-        return f"[문의] {self.id} / {self.user.nickname} / {self.item}"
 
 
 class Review(models.Model):
