@@ -8,7 +8,7 @@ class ContractSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ContractModel
-        fields = ['id', 'user', 'item', 'start_date', 'end_date']
+        fields = ['id', 'user', 'item', 'start_date', 'end_date', 'status']
 
 class MyPageContractSerializer(serializers.ModelSerializer):
     item = MyPageItemSerializer()

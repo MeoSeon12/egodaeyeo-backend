@@ -2,12 +2,13 @@ from datetime import datetime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
+from asgiref.sync import sync_to_async
 import locale
 from channels.consumer import AsyncConsumer
 from channels.db import database_sync_to_async
 from chat.models import ChatMessage, ChatRoom
 from user.models import User
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from contract.models import Contract
 
 locale.setlocale(locale.LC_TIME, 'ko_KR')
 
@@ -151,10 +152,12 @@ class ContractConsumer(AsyncConsumer):
         receiver_id = received_data.get('receiver')
         room_id = received_data.get('room_id')
         item_id = received_data.get('item_id')
+        contract_status = received_data.get('contract_status')
 
         sender = await self.get_user_object(sender_id)
         receiver = await self.get_user_object(receiver_id)
         room_obj = await self.get_chatroom(room_id)
+
         
         if not sender:
             print('Error:: sent by user is incorrect')
@@ -163,7 +166,7 @@ class ContractConsumer(AsyncConsumer):
         if not room_obj:
             print('Error:: Header id is incorrect')
 
-        await self.create_chat_message(room_obj, sender)
+        await self.create_chat_message(room_obj, sender, content)
         
         other_user_chat_room = f'user_chatroom_{receiver_id}'
         self_user = sender
@@ -178,6 +181,7 @@ class ContractConsumer(AsyncConsumer):
             'date': now_date,
             'time': now_time,
             'item_id': item_id,
+            'contract_status': contract_status
         }
         
         #상대방 채팅창에 send
@@ -228,6 +232,6 @@ class ContractConsumer(AsyncConsumer):
         return obj
 
     @database_sync_to_async
-    def create_chat_message(self, room, sender):
-        ChatMessage.objects.create(room=room, user=sender, application=True)
+    def create_chat_message(self, room, sender, content):
+        ChatMessage.objects.create(room=room, user=sender, content=content, application=True)
 

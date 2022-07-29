@@ -7,6 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from item.models import Item as ItemModel
 from contract.models import Contract as ContractModel
 from .serializers import ContractSerializer
+from chat.models import ChatRoom as ChatRoomModel
 
 class ContractView(APIView):
     authentication_classes = [JWTAuthentication]
@@ -24,6 +25,7 @@ class ContractView(APIView):
         user_id = request.user.id
         start_date = request.data.get("startTime")
         end_date = request.data.get("endTime")
+        status_str = request.data.get("status")
         item = ItemModel.objects.get(id=item_id)
         
         try:
@@ -37,7 +39,8 @@ class ContractView(APIView):
                 "user": user_id,
                 "item": item.id,
                 "start_date": start_date,
-                "end_date": end_date
+                "end_date": end_date,
+                "status": status_str
             }
 
             contract_serializer = ContractSerializer(data=contract_data, context={"request": request})
@@ -63,18 +66,24 @@ class ContractView(APIView):
             contract = ContractModel.objects.get(item=item)
             contract.status = status_str
             contract.save()
+            
+            current_chat_room = ChatRoomModel.objects.get(item=item_id, author=user_id)
         except:
-            return Response({"msg": "계약 수정 실패"})
+            return Response({"msg": "계약 수정 실패"}, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response({"msg": "계약 수정 완료"}, status=status.HTTP_200_OK)
+        return Response({"msg": "계약 수정 완료", "status": contract.status, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
         
     
     #대여신청 거절 클릭시
     def delete(self, request, item_id):
         user_id = request.user.id
-        item = ItemModel.objects.get(id=item_id, user=user_id)
-        contract = ContractModel.objects.get(item=item)
+        try:
+            item = ItemModel.objects.get(id=item_id, user=user_id)
+            contract = ContractModel.objects.get(item=item)
+            current_chat_room = ChatRoomModel.objects.get(item=item_id, author=user_id)
+            contract.delete()
+            
+        except:
+            return Response({"msg": "계약이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
         
-        contract.delete()
-        
-        return Response({"msg": "대여 신청 거절완료"}, status=status.HTTP_200_OK)
+        return Response({"msg": "대여 신청 거절완료", "status" : None, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
