@@ -286,6 +286,10 @@ class ReviewView(APIView):
         content = request.data.get("content")
         rating = request.data.get("rating")
         item = ItemModel.objects.get(id=item_id)
+        #리뷰 평점 유저 스코어에 반영
+        item.user.score = int(item.user.score or 0) #유저 스코어가 null일 경우에 0으로 반환
+        item.user.score += int(rating) * 20
+        item.user.save()
 
         review_data = {
             "user": user_id,

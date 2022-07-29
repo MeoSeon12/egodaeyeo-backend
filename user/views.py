@@ -7,6 +7,7 @@ from user.models import User as UserModel
 from item.models import (
     Item as ItemModel,
     Bookmark as BookmarkModel,
+    Review as ReviewModel
 )
 from item.serializers import MyPageItemSerializer
 from contract.models import Contract as ContractModel
@@ -28,7 +29,8 @@ class UserView(APIView):
         user = UserModel.objects.get(id=id)
         user_image = user.image.url
         user_nickname = user.nickname
-        user_score = user.score
+        user_review_count = ReviewModel.objects.filter(item__user=user.id).count()
+        user_score = user.score / user_review_count
         user_address = user.address
         
         data = {
