@@ -30,7 +30,10 @@ class UserView(APIView):
         user_image = user.image.url
         user_nickname = user.nickname
         user_review_count = ReviewModel.objects.filter(item__user=user.id).count()
-        user_score = user.score / user_review_count
+        if user_review_count < 1:
+             user_score = user.score
+        else:
+            user_score = user.score / user_review_count
         user_address = user.address
         
         data = {
