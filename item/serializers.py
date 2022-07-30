@@ -12,19 +12,31 @@ from item.models import (
 )
 
 
+# 아이템 모델 직렬화 (물품 등록 페이지)
+class ItemPostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ItemModel
+        fields = "__all__"
+
+
+# 아이템 이미지 모델 직렬화
 class ItemImageSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ItemImageModel
-        fields = ["image"]
+        fields = "__all__"
 
-# 아이템 페이지 직렬화
+
+# 카테고리 모델 직렬화
 class CategorySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CategoryModel
         fields = ["name"]
 
+
+# 아이템 모델 직렬화
 class ItemSerializer(serializers.ModelSerializer):
     user_address = serializers.SerializerMethodField()
     item_bookmarks = serializers.SerializerMethodField()
@@ -61,6 +73,8 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = ["id", "section", "category", "image", "title", "price", 
                 "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
 
+
+# 아이템 모델 직렬화 (마이페이지)
 class MyPageItemSerializer(serializers.ModelSerializer):
     # images = ItemImageSerializer(many=True, source='itemimage_set')
     image = serializers.SerializerMethodField()
@@ -77,6 +91,8 @@ class MyPageItemSerializer(serializers.ModelSerializer):
         model = ItemModel
         fields = ["id", "section", "image", "title", "status"]
 
+
+# Contract 모델 직렬화
 class ContractSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -84,9 +100,7 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = ["id", "item", "status", "user", "start_date", "end_date"]
 
 
-
-# 아이템 상세 페이지 직렬화
-# 리뷰 직렬화
+# 리뷰 모델 직렬화 (물품 상세 페이지)
 class DetailReviewSerializer(serializers.ModelSerializer):
 
     image = serializers.SerializerMethodField()
@@ -147,7 +161,7 @@ class DetailReviewSerializer(serializers.ModelSerializer):
         }
 
 
-# 아이템 직렬화
+# 아이템 모델 직렬화 (물품 상세 페이지)
 class DetailSerializer(serializers.ModelSerializer):
 
     user = serializers.SerializerMethodField()
@@ -249,10 +263,8 @@ class DetailSerializer(serializers.ModelSerializer):
         chatrooms = obj.chatroom_set
         return chatrooms.count()
 
-
     class Meta:
         model = ItemModel
         fields = ["id", "user", "section", "category", "status", "remain_time", "title", "images",
                     "content", "time_unit", "price", "created_at", "updated_at",
                     "is_bookmark", "bookmark_length", "chatroom_length", "reviews"]
-

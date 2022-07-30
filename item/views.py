@@ -5,7 +5,10 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
 from item.pagination import PaginationHandlerMixin
-from item.serializers import ItemSerializer, CategorySerializer, DetailSerializer, DetailReviewSerializer, ContractSerializer
+from item.serializers import (
+    ItemSerializer, CategorySerializer, DetailSerializer, ItemImageSerializer,
+    DetailReviewSerializer, ContractSerializer, ItemPostSerializer
+)
 from egodaeyeo.permissions import IsAddressOrReadOnly
 from user.models import User as UserModel
 from item.models import (
@@ -163,35 +166,57 @@ class ItemPostView(APIView):
         if time_unit == '-- 기간 --':
             time_unit = None
 
-        # 아이템 모델에 저장
-        item = ItemModel.objects.create(
-            section = request.data['section'],
-            title = request.data['title'],
-            content = request.data['content'],
-            time_unit = time_unit,
-            price = price,
-            user = UserModel.objects.get(id=request.user.id),
-            category = CategoryModel.objects.get(name=request.data['category']),
-            status = '대여 가능'
-        )
+        item_data = {
+            'section': request.data['section'],
+            'title': request.data['title'],
+            'content': request.data['content'],
+            'time_unit': time_unit,
+            'price': price,
+            'user': request.user.id,
+            'category': CategoryModel.objects.get(name=request.data['category']).id,
+            'status': '대여 가능'
+        }
 
-        # 아이템 이미지 모델에 저장
-        try:    # 이미지가 있을 경우
-            images = request.data.pop('image')
+        item_serializer = ItemPostSerializer(data=item_data)
 
-            for image in images:
+        # 아이템 모델 벨리데이션 합격하면 저장
+        if item_serializer.is_valid():
+            item_obj = item_serializer.save()
 
-                ItemImageModel.objects.create(
-                    item = ItemModel.objects.get(id=item.id),
-                    image = image
-                )
+            # 이미지 포함하는지 체크
+            if not 'image' in request.data:
+                return Response(item_obj.id, status=status.HTTP_200_OK)
+            else:
+                images = request.data.pop('image')
 
-        except: # 이미지가 없을 경우
-            ItemImageModel.objects.create(
-                item = ItemModel.objects.get(id=item.id)
-            )
+                passed_item_image_data_list = []
 
-        return Response(item.id, status=status.HTTP_200_OK)
+                for image in images:
+                    item_image_data = {
+                        'item': item_obj.id,
+                        'image': image
+                    }
+
+                    item_image_serializer = ItemImageSerializer(data=item_image_data)
+
+                    # 아이템 이미지 모델 벨리데이션 합격하면 합격 리스트에 추가
+                    if item_image_serializer.is_valid():
+                        passed_item_image_data_list.append(item_image_serializer)
+                
+                    # 아이템 이미지 모델 벨리데이션 불합격하면 아이템 모델 삭제
+                    else:
+                        item_obj.delete()
+                        return Response(item_image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+                # 모든 이미지가 벨리데이션에 합격했다면 저장
+                for passed_item_image_data in passed_item_image_data_list:
+                    passed_item_image_data.save()
+
+                return Response(item_obj.id, status=status.HTTP_200_OK)
+        
+        # 아이템 모델 벨리데이션 불합격
+        else:
+            return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 물품 수정 페이지

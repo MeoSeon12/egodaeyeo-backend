@@ -12,13 +12,14 @@ from contract.models import Contract
 
 locale.setlocale(locale.LC_TIME, 'ko_KR')
 
+
+# 채팅 컨슈머
 class ChatConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
         #url에 room_id를 받아서 가져온다.
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = 'chat_%s' % self.room_id
-        print("그룹네임", self.room_group_name)
 
         # Join room group
         await self.channel_layer.group_add(
@@ -37,7 +38,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         
         received_data = json.loads(text_data)
-        print("리시브",received_data)
         message = received_data.get('message')
         sender_id = received_data.get('sender')
         receiver_id = received_data.get('receiver')
@@ -103,7 +103,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender': sender
         }))
 
-   
     @database_sync_to_async
     def get_user_object(self, user_id):
         qs = User.objects.filter(id=user_id)
@@ -128,83 +127,127 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 # 대여 신청 컨슈머
-class ContractConsumer(AsyncConsumer):
+class ContractConsumer(AsyncWebsocketConsumer):
+    
+    async def connect(self):
+        
+        self.room_id = self.scope['url_route']['kwargs']['room_id']
+        self.room_group_name = f'contract_{self.room_id}'
+        
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+
+
+    async def receive(self, text_data):
+        received_data = json.loads(text_data)
+
+        response = {
+            'room_id': received_data['room_id'],
+            'sender': received_data['sender'],
+            'status': received_data['status'],
+            'date': datetime.now().strftime('%Y년 %m월 %d일 %A'),
+            'time': datetime.now().strftime('%p %I:%M'),
+        }
+
+        await self.create_chat_message(received_data['room_id'], received_data['sender'])
+
+        # 현재그룹에 send
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'text': json.dumps(response)
+            }
+        )
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def chat_message(self, event):
+        await self.send({
+            'type': 'websocket.send',
+            'text': event,
+        })
+
+    async def chat_message(self, event):
+        text = json.loads(event['text'])
+        room_id = text['room_id']
+        sender = text['sender']
+        status = text['status']
+        date = text['date']
+        time = text['time']
+
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({
+            'room_id': room_id,
+            'sender': sender,
+            'status': status,
+            'date': date,
+            'time': time,
+        }))
+
+    @database_sync_to_async
+    def create_chat_message(self, roomId, senderId):
+        room_obj = ChatRoom.objects.get(id=roomId)
+        user_obj = User.objects.get(id=senderId)
+        ChatMessage.objects.create(room=room_obj, user=user_obj, application=True, status='검토 중')
+
+
+# 알람 컨슈머
+class AlertConsumer(AsyncConsumer):
     
     async def websocket_connect(self, event):
         
-        room_id = self.scope['url_route']['kwargs']['room_id']
-        chat_room = f'user_chatroom_rental_{room_id}'
-        self.chat_room = chat_room
+        user_id = self.scope['url_route']['kwargs']['user_id']
+        chat_alert = f'user_chat_alert_{user_id}'
+        self.chat_alert = chat_alert
         
         await self.channel_layer.group_add(
-            chat_room,
+            chat_alert,
             self.channel_name
         )
         await self.send({
             'type': 'websocket.accept'
         })
 
+    # 웹소켓에 데이터 들어옴
     async def websocket_receive(self, event):
         
         received_data = json.loads(event['text'])
-        content = received_data.get('message')
-        sender_id = received_data.get('sender')
         receiver_id = received_data.get('receiver')
-        room_id = received_data.get('room_id')
-        item_id = received_data.get('item_id')
-        contract_status = received_data.get('contract_status')
+        sender_id = received_data.get('sender')
 
-        sender = await self.get_user_object(sender_id)
-        receiver = await self.get_user_object(receiver_id)
-        room_obj = await self.get_chatroom(room_id)
-
+        # 데이터 가공
+        sender = await self.get_user_object(sender_id)  # 작성자 닉네임
         
-        if not sender:
-            print('Error:: sent by user is incorrect')
-        if not receiver:
-            print('Error:: send to user is incorrect')
-        if not room_obj:
-            print('Error:: Header id is incorrect')
-
-        await self.create_chat_message(room_obj, sender, content)
-        
-        other_user_chat_room = f'user_chatroom_{receiver_id}'
-        self_user = sender
-
-        now_date = datetime.now().strftime('%Y년 %m월 %d일 %A')
-        now_time = datetime.now().strftime('%p %I:%M')
-
+        # 수신자에게 보낼 데이터
         response = {
-            'message': content,
-            'sender': self_user.id,
-            'room_id': room_id,
-            'date': now_date,
-            'time': now_time,
-            'item_id': item_id,
-            'contract_status': contract_status
+            'sender': sender,
+            'title': received_data['title'],
+            'room_id': received_data['room_id'],
+            'status': received_data['status'],
         }
         
-        #상대방 채팅창에 send
+        # 상대방 온메시지에 보냄
+        other_user_chat_alert = f'user_chat_alert_{receiver_id}'
+
         await self.channel_layer.group_send(
-            other_user_chat_room,
+            other_user_chat_alert,
             {
                 'type': 'chat_message',
                 'text': json.dumps(response)
             }
         )
 
-        #내 채팅창에 send
-        await self.channel_layer.group_send(
-            self.chat_room,
-            {
-                'type': 'chat_message',
-                'text': json.dumps(response)
-            }
-        )
-
+    # 웹소켓 연결종료
     async def websocket_disconnect(self, event):
         print('disconnect', event)
-
 
     async def chat_message(self, event):
         await self.send({
@@ -212,26 +255,14 @@ class ContractConsumer(AsyncConsumer):
             'text': event['text'],
         })
     
-    
+    # 데이터 가공 (발신자 닉네임 조회)
     @database_sync_to_async
-    def get_user_object(self, user_id):
-        qs = User.objects.filter(id=user_id)
-        if qs.exists():
-            obj = qs.first()
-        else:
-            obj = None
-        return obj
+    def get_user_object(self, sender_id):
+        qs = User.objects.get(id=sender_id)
+        return qs.nickname
 
+    # 데이터 가공 (채팅창 제목 조회)
     @database_sync_to_async
-    def get_chatroom(self, room_id):
-        qs = ChatRoom.objects.filter(id=room_id)
-        if qs.exists():
-            obj = qs.first()
-        else:
-            obj = None
-        return obj
-
-    @database_sync_to_async
-    def create_chat_message(self, room, sender, content):
-        ChatMessage.objects.create(room=room, user=sender, content=content, application=True)
-
+    def get_title_object(self, room_id):
+        qs = ChatRoom.objects.get(id=room_id)
+        return qs.item.title
