@@ -1,5 +1,6 @@
 from django.db import models
 from user.models import User as UserModel
+from django.core.validators import MaxValueValidator
 
 
 class Category(models.Model):
@@ -14,10 +15,14 @@ class Category(models.Model):
 
 class Item(models.Model):
     section = models.CharField("섹션", max_length=10, choices=(('빌려요', '빌려요'), ('빌려드려요', '빌려드려요')))
-    title = models.CharField("제목", max_length=30)
+    title = models.CharField("제목", max_length=23)
     content = models.TextField("내용", max_length=1000)
     time_unit = models.CharField("시간 단위", max_length=5, choices=(('시간', '시간'), ('일', '일'), ('월', '월')), null=True, blank=True)
-    price = models.PositiveIntegerField("가격", blank=True, null=True)
+    price = models.PositiveIntegerField(
+        "가격", blank=True, null=True,
+        validators=[
+            MaxValueValidator(10000000)
+        ])
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField("생성일", auto_now_add=True)

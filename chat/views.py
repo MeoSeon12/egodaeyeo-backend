@@ -1,16 +1,19 @@
+from datetime import timedelta
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from egodaeyeo.permissions import IsAddressOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from item.models import Item as ItemModel
+from chat.serializers import ChatSerializer, ChatRoomSerializer
 from chat.models import (
     ChatRoom as ChatRoomModel,
     ChatMessage as ChatMessageModel
 )
-from item.models import Item as ItemModel
-from django.db.models import Q
 
-from chat.serializers import ChatSerializer, ChatRoomSerializer
+
 class ChatView(APIView):
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
@@ -72,3 +75,54 @@ class ChatRoomView(APIView):
             return Response({"msg": "채팅방이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
         
         return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
+
+
+# 채팅 알람 뷰
+class ChatAlertView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    # 읽지않은 메세지 데이터 보내기
+    def get(self, request, user_id):
+
+        # 참가중인 채팅방
+        joined_chatrooms = ChatRoomModel.objects.filter(Q(author=user_id) | Q(inquirer=user_id))
+        if not joined_chatrooms.exists():
+            return Response({'msg': '참가중인 채팅방이 없습니다'}, status=status.HTTP_200_OK)
+        
+        else:
+            unread_message_list = []
+
+            for joined_chatroom in joined_chatrooms:
+
+                # 읽지않은 채팅
+                latest_unread_chat = joined_chatroom.chatmessage_set.filter(is_read=False, application=False).exclude(user=user_id)
+                if latest_unread_chat.exists():
+                    latest_unread_chat = latest_unread_chat.last()
+                    latest_unread_chat = {
+                        'room': joined_chatroom.id,
+                        'title': joined_chatroom.item.title,
+                        'sender': latest_unread_chat.user.nickname,
+                        'content': latest_unread_chat.content,
+                        'created_at': latest_unread_chat.created_at,
+                    }
+                    unread_message_list.append(latest_unread_chat)
+
+                # 읽지않은 거래상태
+                latest_unread_contract = joined_chatroom.chatmessage_set.filter(is_read=False, application=True).exclude(user=user_id)
+                print(latest_unread_contract)
+                if latest_unread_contract.exists():
+                    latest_unread_contract = latest_unread_contract.last()
+                    latest_unread_contract = {
+                        'room': joined_chatroom.id,
+                        'title': joined_chatroom.item.title,
+                        'sender': latest_unread_contract.user.nickname,
+                        'content': latest_unread_contract.content,
+                        'created_at': latest_unread_contract.created_at,
+                        'status': latest_unread_contract.status,
+                    }
+                    unread_message_list.append(latest_unread_contract)
+            
+            unread_message_list.sort(key=lambda x: x['created_at'])
+
+            return Response(unread_message_list, status=status.HTTP_200_OK)
