@@ -34,6 +34,7 @@ class ContractView(APIView):
                 return Response({"msg": "이미 대여신청한 물품입니다."})
             
         except ContractModel.DoesNotExist:
+            print(status_str)
 
             contract_data = {
                 "user": user_id,

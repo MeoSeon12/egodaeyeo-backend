@@ -3,6 +3,13 @@ from user.models import User as UserModel
 from django.core.validators import MaxValueValidator
 
 
+RENTAL_STATUS = (
+    ('대여 가능','대여 가능'),
+    ('검토 중', '검토 중'),
+    ('대여 중', '대여 중'),
+    ('대여 종료', '대여 종료'),
+)
+
 class Category(models.Model):
     name = models.CharField(max_length=30)
     
@@ -27,7 +34,7 @@ class Item(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField("생성일", auto_now_add=True)
     updated_at = models.DateTimeField("수정일", auto_now = True)
-    status = models.CharField("상태", blank=True, max_length=10, choices=(('대여 종료', '대여 종료'), ('대여 가능','대여 가능'), ('예약 중', '예약 중'), ('대여 중', '대여 중')))
+    status = models.CharField("상태", blank=True, max_length=10, choices=RENTAL_STATUS)
     
     class Meta:
         db_table = "items"

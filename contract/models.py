@@ -1,11 +1,11 @@
 from django.db import models
 from user.models import User as UserModel
-from item.models import Item as ItemModel
+from item.models import Item as ItemModel, RENTAL_STATUS
 
 class Contract(models.Model):
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     item = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
-    status = models.CharField("상태", max_length=10, choices=(('대여 종료', '대여 종료'), ('대여 가능', '대여 가능'), ('예약 중', '예약 중'), ('대여 중', '대여 중')))
+    status = models.CharField("상태", max_length=10, choices=RENTAL_STATUS)
     start_date = models.DateTimeField("시작일")
     end_date = models.DateTimeField("반납일")
 

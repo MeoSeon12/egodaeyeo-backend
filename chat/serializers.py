@@ -20,7 +20,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         return obj.created_at.strftime('%Y년 %m월 %d일 %A')
     class Meta:
         model = ChatMessageModel
-        fields = ['id', 'time', 'date', 'content', 'is_read', 'room', 'user', 'application']
+        fields = ['id', 'time', 'date', 'content', 'is_read', 'room', 'user', 'application', 'contract_type']
 
 class ChatSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()

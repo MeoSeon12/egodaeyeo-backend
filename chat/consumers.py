@@ -126,7 +126,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         ChatMessage.objects.create(room=room, user=sender, content=content)
 
 
-# 대여 신청 컨슈머
+# 거래 컨슈머
 class ContractConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
@@ -143,16 +143,19 @@ class ContractConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         received_data = json.loads(text_data)
+        room_id = received_data['room_id']
+        sender = received_data['sender']
+        contract_type = received_data['contract_type']
 
         response = {
-            'room_id': received_data['room_id'],
-            'sender': received_data['sender'],
-            'status': received_data['status'],
+            'room_id': room_id,
+            'sender': sender,
+            'contract_type': contract_type,
             'date': datetime.now().strftime('%Y년 %m월 %d일 %A'),
             'time': datetime.now().strftime('%p %I:%M'),
         }
 
-        await self.create_chat_message(received_data['room_id'], received_data['sender'])
+        await self.create_chat_message(room_id, sender, contract_type)
 
         # 현재그룹에 send
         await self.channel_layer.group_send(
@@ -193,10 +196,10 @@ class ContractConsumer(AsyncWebsocketConsumer):
         }))
 
     @database_sync_to_async
-    def create_chat_message(self, roomId, senderId):
-        room_obj = ChatRoom.objects.get(id=roomId)
-        user_obj = User.objects.get(id=senderId)
-        ChatMessage.objects.create(room=room_obj, user=user_obj, application=True, status='검토 중')
+    def create_chat_message(self, room_id, sender_id, contract_type):
+        room_obj = ChatRoom.objects.get(id=room_id)
+        user_obj = User.objects.get(id=sender_id)
+        ChatMessage.objects.create(room=room_obj, user=user_obj, contract_type=contract_type, application=True)
 
 
 # 알람 컨슈머
@@ -221,15 +224,15 @@ class AlertConsumer(AsyncConsumer):
         
         received_data = json.loads(event['text'])
         receiver_id = received_data.get('receiver')
-        sender_id = received_data.get('sender')
 
         # 데이터 가공
-        sender = await self.get_user_object(sender_id)  # 작성자 닉네임
+        sender = await self.get_user_object(received_data['sender'])  # 작성자 닉네임
+        title = await self.get_title_object(received_data['room_id'])
         
         # 수신자에게 보낼 데이터
         response = {
             'sender': sender,
-            'title': received_data['title'],
+            'title': title,
             'room_id': received_data['room_id'],
             'status': received_data['status'],
         }
