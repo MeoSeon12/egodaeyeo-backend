@@ -14,6 +14,7 @@ from chat.models import (
 )
 
 
+# 채팅방 리스트 뷰
 class ChatView(APIView):
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
@@ -41,20 +42,43 @@ class ChatView(APIView):
         try:
             #존재하는 채팅방이 있다면, 채팅방을 가져온다.
             chat_room = ChatRoomModel.objects.get(inquirer=inquirer.id, author=author.id, item=item.id)
-            
-            return Response({"msg": "채팅방 불러오기!"}, status=status.HTTP_200_OK)
+            chat_room = {
+                'status': '채팅방 조회됨',
+                'id': chat_room.id,
+                'author': {
+                    'id:': chat_room.author.id,
+                    'nickname': chat_room.author.nickname
+                },
+                'inquirer': {
+                    'id:': chat_room.inquirer.id,
+                    'nickname': chat_room.inquirer.nickname
+                }
+            }
+            return Response(chat_room, status=status.HTTP_200_OK)
         
         except ChatRoomModel.DoesNotExist:
             #존재하는 채팅방이 없다면, 새롭게 생성
-            ChatRoomModel.objects.create(
+            chat_room = ChatRoomModel.objects.create(
                 inquirer=inquirer, 
                 author=author, 
                 item=item
             )
-            
-            return Response({"msg": "채팅방 생성!"}, status=status.HTTP_200_OK)
+            chat_room = {
+                'status': '채팅방 생성됨',
+                'id': chat_room.id,
+                'author': {
+                    'id:': chat_room.author.id,
+                    'nickname': chat_room.author.nickname
+                },
+                'inquirer': {
+                    'id:': chat_room.inquirer.id,
+                    'nickname': chat_room.inquirer.nickname
+                }
+            }
+            return Response(chat_room, status=status.HTTP_200_OK)
 
 
+# 개별 채팅방 뷰
 class ChatRoomView(APIView):
     
     #각 채팅방 data 조회
@@ -73,7 +97,6 @@ class ChatRoomView(APIView):
                 
         except ChatRoomModel.DoesNotExist:
             return Response({"msg": "채팅방이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
-        
         return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
 
 
@@ -100,11 +123,11 @@ class ChatAlertView(APIView):
                 if latest_unread_chat.exists():
                     latest_unread_chat = latest_unread_chat.last()
                     latest_unread_chat = {
-                        'room': joined_chatroom.id,
+                        'room_id': joined_chatroom.id,
                         'title': joined_chatroom.item.title,
                         'sender': latest_unread_chat.user.nickname,
-                        'content': latest_unread_chat.content,
                         'created_at': latest_unread_chat.created_at,
+                        'status': None,
                     }
                     unread_message_list.append(latest_unread_chat)
 
@@ -114,10 +137,9 @@ class ChatAlertView(APIView):
                 if latest_unread_contract.exists():
                     latest_unread_contract = latest_unread_contract.last()
                     latest_unread_contract = {
-                        'room': joined_chatroom.id,
+                        'room_id': joined_chatroom.id,
                         'title': joined_chatroom.item.title,
                         'sender': latest_unread_contract.user.nickname,
-                        'content': latest_unread_contract.content,
                         'created_at': latest_unread_contract.created_at,
                         'status': latest_unread_contract.status,
                     }

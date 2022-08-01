@@ -126,7 +126,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         ChatMessage.objects.create(room=room, user=sender, content=content)
 
 
-# 대여 신청 컨슈머
+# 거래 컨슈머
 class ContractConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
@@ -196,7 +196,7 @@ class ContractConsumer(AsyncWebsocketConsumer):
     def create_chat_message(self, roomId, senderId):
         room_obj = ChatRoom.objects.get(id=roomId)
         user_obj = User.objects.get(id=senderId)
-        ChatMessage.objects.create(room=room_obj, user=user_obj, application=True, status='검토 중')
+        ChatMessage.objects.create(room=room_obj, user=user_obj, application=True)
 
 
 # 알람 컨슈머
@@ -221,15 +221,15 @@ class AlertConsumer(AsyncConsumer):
         
         received_data = json.loads(event['text'])
         receiver_id = received_data.get('receiver')
-        sender_id = received_data.get('sender')
 
         # 데이터 가공
-        sender = await self.get_user_object(sender_id)  # 작성자 닉네임
+        sender = await self.get_user_object(received_data['sender'])  # 작성자 닉네임
+        title = await self.get_title_object(received_data['room_id'])
         
         # 수신자에게 보낼 데이터
         response = {
             'sender': sender,
-            'title': received_data['title'],
+            'title': title,
             'room_id': received_data['room_id'],
             'status': received_data['status'],
         }
