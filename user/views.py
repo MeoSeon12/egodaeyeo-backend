@@ -29,6 +29,7 @@ class UserView(APIView):
         user = UserModel.objects.get(id=id)
         user_image = user.image.url
         user_nickname = user.nickname
+        user_address = user.address
         user_review_count = ReviewModel.objects.filter(item__user=user.id).count()
         print(user_review_count)
         if user_review_count < 1:
@@ -36,13 +37,13 @@ class UserView(APIView):
         else:
             print("유저스코어",user.score)
             user_score = user.score / user_review_count
-        user_address = user.address
         
         data = {
             "image": user_image,
             "nickname": user_nickname,
             "score": user_score,
-            "address": user_address
+            "address": user_address,
+            "user_id": id,
         }
 
         return Response(data, status=status.HTTP_200_OK)

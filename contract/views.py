@@ -9,10 +9,11 @@ from contract.models import Contract as ContractModel
 from .serializers import ContractSerializer
 from chat.models import ChatRoom as ChatRoomModel
 
+
 class ContractView(APIView):
     authentication_classes = [JWTAuthentication]
     
-    #대여신청 도착 버튼 클릭시
+    #대여신청 도착 버튼 클릭시 계약날짜 정보 조회
     def get(self, request, item_id):
         item = ItemModel.objects.get(id=item_id)
         contract = ContractModel.objects.get(item=item)
@@ -25,7 +26,6 @@ class ContractView(APIView):
         user_id = request.user.id
         start_date = request.data.get("startTime")
         end_date = request.data.get("endTime")
-        status_str = request.data.get("status")
         item = ItemModel.objects.get(id=item_id)
         
         try:
@@ -41,7 +41,7 @@ class ContractView(APIView):
                 "item": item.id,
                 "start_date": start_date,
                 "end_date": end_date,
-                "status": status_str
+                "status": '검토 중'
             }
 
             contract_serializer = ContractSerializer(data=contract_data, context={"request": request})

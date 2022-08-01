@@ -182,7 +182,7 @@ class ContractConsumer(AsyncWebsocketConsumer):
         text = json.loads(event['text'])
         room_id = text['room_id']
         sender = text['sender']
-        status = text['status']
+        contract_type = text['contract_type']
         date = text['date']
         time = text['time']
 
@@ -190,7 +190,7 @@ class ContractConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'room_id': room_id,
             'sender': sender,
-            'status': status,
+            'contract_type': contract_type,
             'date': date,
             'time': time,
         }))
@@ -240,6 +240,7 @@ class AlertConsumer(AsyncConsumer):
         # 상대방 온메시지에 보냄
         other_user_chat_alert = f'user_chat_alert_{receiver_id}'
 
+        
         await self.channel_layer.group_send(
             other_user_chat_alert,
             {

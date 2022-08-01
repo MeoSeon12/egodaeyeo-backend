@@ -14,6 +14,7 @@ from chat.models import (
 )
 
 
+# 채팅방 리스트 뷰
 class ChatView(APIView):
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
@@ -24,14 +25,8 @@ class ChatView(APIView):
 
         my_chat_rooms_serializer = ChatSerializer(my_chat_rooms, many=True)
         
-        #채팅방 불러올시 is_read조회
-        # for my_chat_room in my_chat_rooms:
-        #     other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=my_chat_room))
-        #     print("상대 채팅",other_chats)
-        #     for other_chat in other_chats:
-        #         print("각채팅방의 채팅들의 is_read",other_chat.is_read)
-        
         return Response(my_chat_rooms_serializer.data, status=status.HTTP_200_OK)
+    
 
     def post(self, request, item_id):
         inquirer = request.user
@@ -41,20 +36,43 @@ class ChatView(APIView):
         try:
             #존재하는 채팅방이 있다면, 채팅방을 가져온다.
             chat_room = ChatRoomModel.objects.get(inquirer=inquirer.id, author=author.id, item=item.id)
-            
-            return Response({"msg": "채팅방 불러오기!"}, status=status.HTTP_200_OK)
+            chat_room = {
+                'status': '채팅방 조회됨',
+                'id': chat_room.id,
+                'author': {
+                    'id:': chat_room.author.id,
+                    'nickname': chat_room.author.nickname
+                },
+                'inquirer': {
+                    'id:': chat_room.inquirer.id,
+                    'nickname': chat_room.inquirer.nickname
+                }
+            }
+            return Response(chat_room, status=status.HTTP_200_OK)
         
         except ChatRoomModel.DoesNotExist:
             #존재하는 채팅방이 없다면, 새롭게 생성
-            ChatRoomModel.objects.create(
+            chat_room = ChatRoomModel.objects.create(
                 inquirer=inquirer, 
                 author=author, 
                 item=item
             )
-            
-            return Response({"msg": "채팅방 생성!"}, status=status.HTTP_200_OK)
+            chat_room = {
+                'status': '채팅방 생성됨',
+                'id': chat_room.id,
+                'author': {
+                    'id:': chat_room.author.id,
+                    'nickname': chat_room.author.nickname
+                },
+                'inquirer': {
+                    'id:': chat_room.inquirer.id,
+                    'nickname': chat_room.inquirer.nickname
+                }
+            }
+            return Response(chat_room, status=status.HTTP_200_OK)
 
 
+# 개별 채팅방 뷰
 class ChatRoomView(APIView):
     
     #각 채팅방 data 조회
@@ -70,11 +88,18 @@ class ChatRoomView(APIView):
             for other_chat in other_chats:
                 other_chat.is_read = True
                 other_chat.save()
-                
+            return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
+
         except ChatRoomModel.DoesNotExist:
             return Response({"msg": "채팅방이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+    # 실시간으로 바로 읽은 메시지 읽음 처리
+    def put(self, request, room_id):
+        unread_message = ChatMessageModel.objects.get(room_id=room_id, is_read=False)
+        unread_message.is_read = True
+        unread_message.save()
         
-        return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 # 채팅 알람 뷰
@@ -88,7 +113,7 @@ class ChatAlertView(APIView):
         # 참가중인 채팅방
         joined_chatrooms = ChatRoomModel.objects.filter(Q(author=user_id) | Q(inquirer=user_id))
         if not joined_chatrooms.exists():
-            return Response({'msg': '참가중인 채팅방이 없습니다'}, status=status.HTTP_200_OK)
+            return Response({'msg': '참가중인 채팅방이 없습니다'}, status=status.HTTP_204_NO_CONTENT)
         
         else:
             unread_message_list = []
@@ -100,26 +125,24 @@ class ChatAlertView(APIView):
                 if latest_unread_chat.exists():
                     latest_unread_chat = latest_unread_chat.last()
                     latest_unread_chat = {
-                        'room': joined_chatroom.id,
+                        'room_id': joined_chatroom.id,
                         'title': joined_chatroom.item.title,
                         'sender': latest_unread_chat.user.nickname,
-                        'content': latest_unread_chat.content,
                         'created_at': latest_unread_chat.created_at,
+                        'status': None,
                     }
                     unread_message_list.append(latest_unread_chat)
 
                 # 읽지않은 거래상태
                 latest_unread_contract = joined_chatroom.chatmessage_set.filter(is_read=False, application=True).exclude(user=user_id)
-                print(latest_unread_contract)
                 if latest_unread_contract.exists():
                     latest_unread_contract = latest_unread_contract.last()
                     latest_unread_contract = {
-                        'room': joined_chatroom.id,
+                        'room_id': joined_chatroom.id,
                         'title': joined_chatroom.item.title,
                         'sender': latest_unread_contract.user.nickname,
-                        'content': latest_unread_contract.content,
                         'created_at': latest_unread_contract.created_at,
-                        'status': latest_unread_contract.status,
+                        'contract_type': latest_unread_contract.contract_type,
                     }
                     unread_message_list.append(latest_unread_contract)
             
