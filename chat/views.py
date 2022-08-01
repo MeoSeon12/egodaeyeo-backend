@@ -94,7 +94,6 @@ class ChatRoomView(APIView):
             for other_chat in other_chats:
                 other_chat.is_read = True
                 other_chat.save()
-                
         except ChatRoomModel.DoesNotExist:
             return Response({"msg": "채팅방이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
         return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
