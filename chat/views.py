@@ -25,14 +25,8 @@ class ChatView(APIView):
 
         my_chat_rooms_serializer = ChatSerializer(my_chat_rooms, many=True)
         
-        #채팅방 불러올시 is_read조회
-        # for my_chat_room in my_chat_rooms:
-        #     other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=my_chat_room))
-        #     print("상대 채팅",other_chats)
-        #     for other_chat in other_chats:
-        #         print("각채팅방의 채팅들의 is_read",other_chat.is_read)
-        
         return Response(my_chat_rooms_serializer.data, status=status.HTTP_200_OK)
+    
 
     def post(self, request, item_id):
         inquirer = request.user
@@ -94,9 +88,18 @@ class ChatRoomView(APIView):
             for other_chat in other_chats:
                 other_chat.is_read = True
                 other_chat.save()
+            return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
+
         except ChatRoomModel.DoesNotExist:
             return Response({"msg": "채팅방이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
-        return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
+
+    # 실시간으로 바로 읽은 메시지 읽음 처리
+    def put(self, request, room_id):
+        unread_message = ChatMessageModel.objects.get(room_id=room_id, is_read=False)
+        unread_message.is_read = True
+        unread_message.save()
+        
+        return Response(status=status.HTTP_200_OK)
 
 
 # 채팅 알람 뷰
@@ -110,7 +113,7 @@ class ChatAlertView(APIView):
         # 참가중인 채팅방
         joined_chatrooms = ChatRoomModel.objects.filter(Q(author=user_id) | Q(inquirer=user_id))
         if not joined_chatrooms.exists():
-            return Response({'msg': '참가중인 채팅방이 없습니다'}, status=status.HTTP_200_OK)
+            return Response({'msg': '참가중인 채팅방이 없습니다'}, status=status.HTTP_204_NO_CONTENT)
         
         else:
             unread_message_list = []
@@ -132,7 +135,6 @@ class ChatAlertView(APIView):
 
                 # 읽지않은 거래상태
                 latest_unread_contract = joined_chatroom.chatmessage_set.filter(is_read=False, application=True).exclude(user=user_id)
-                print(latest_unread_contract)
                 if latest_unread_contract.exists():
                     latest_unread_contract = latest_unread_contract.last()
                     latest_unread_contract = {
@@ -140,7 +142,7 @@ class ChatAlertView(APIView):
                         'title': joined_chatroom.item.title,
                         'sender': latest_unread_contract.user.nickname,
                         'created_at': latest_unread_contract.created_at,
-                        'status': latest_unread_contract.status,
+                        'contract_type': latest_unread_contract.contract_type,
                     }
                     unread_message_list.append(latest_unread_contract)
             

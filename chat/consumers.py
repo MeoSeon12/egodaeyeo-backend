@@ -143,16 +143,19 @@ class ContractConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         received_data = json.loads(text_data)
+        room_id = received_data['room_id']
+        sender = received_data['sender']
+        contract_type = received_data['contract_type']
 
         response = {
-            'room_id': received_data['room_id'],
-            'sender': received_data['sender'],
-            'status': received_data['status'],
+            'room_id': room_id,
+            'sender': sender,
+            'contract_type': contract_type,
             'date': datetime.now().strftime('%Y년 %m월 %d일 %A'),
             'time': datetime.now().strftime('%p %I:%M'),
         }
 
-        await self.create_chat_message(received_data['room_id'], received_data['sender'])
+        await self.create_chat_message(room_id, sender, contract_type)
 
         # 현재그룹에 send
         await self.channel_layer.group_send(
@@ -179,7 +182,7 @@ class ContractConsumer(AsyncWebsocketConsumer):
         text = json.loads(event['text'])
         room_id = text['room_id']
         sender = text['sender']
-        status = text['status']
+        contract_type = text['contract_type']
         date = text['date']
         time = text['time']
 
@@ -187,16 +190,16 @@ class ContractConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'room_id': room_id,
             'sender': sender,
-            'status': status,
+            'contract_type': contract_type,
             'date': date,
             'time': time,
         }))
 
     @database_sync_to_async
-    def create_chat_message(self, roomId, senderId):
-        room_obj = ChatRoom.objects.get(id=roomId)
-        user_obj = User.objects.get(id=senderId)
-        ChatMessage.objects.create(room=room_obj, user=user_obj, application=True)
+    def create_chat_message(self, room_id, sender_id, contract_type):
+        room_obj = ChatRoom.objects.get(id=room_id)
+        user_obj = User.objects.get(id=sender_id)
+        ChatMessage.objects.create(room=room_obj, user=user_obj, contract_type=contract_type, application=True)
 
 
 # 알람 컨슈머
@@ -237,6 +240,7 @@ class AlertConsumer(AsyncConsumer):
         # 상대방 온메시지에 보냄
         other_user_chat_alert = f'user_chat_alert_{receiver_id}'
 
+        
         await self.channel_layer.group_send(
             other_user_chat_alert,
             {

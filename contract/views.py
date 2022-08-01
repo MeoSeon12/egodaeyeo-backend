@@ -13,7 +13,7 @@ from chat.models import ChatRoom as ChatRoomModel
 class ContractView(APIView):
     authentication_classes = [JWTAuthentication]
     
-    #대여신청 도착 버튼 클릭시
+    #대여신청 도착 버튼 클릭시 계약날짜 정보 조회
     def get(self, request, item_id):
         item = ItemModel.objects.get(id=item_id)
         contract = ContractModel.objects.get(item=item)
