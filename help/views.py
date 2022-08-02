@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework import permissions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import FeedbackSerializer
-import requests
 
 class FeedbackView(APIView):
     permission_classes = [permissions.AllowAny]

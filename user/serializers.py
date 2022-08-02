@@ -4,7 +4,7 @@ from item.serializers import MyPageItemSerializer
 from item.models import Bookmark as BookmarkModel
 
 class UserSerializer(serializers.ModelSerializer):
-    
+
     def create(self, validated_data):
         password = validated_data.pop("password")
         user = UserModel(**validated_data)
@@ -26,10 +26,11 @@ class UserSerializer(serializers.ModelSerializer):
             
     class Meta:
         model = UserModel
-        fields = ["id", "nickname", "email", "password", "address"]
+        fields = ["id","image", "nickname", "email", "password", "address"]
         
         extra_kwargs = {
-            'password' : {'write_only': True}
+            'password' : {'write_only': True},
+            'image' : {'required': False}
         }
 
 
@@ -40,3 +41,4 @@ class MyBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookmarkModel
         fields = ["id", "item"]
+        
