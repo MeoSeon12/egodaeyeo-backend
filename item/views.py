@@ -190,11 +190,10 @@ class ItemPostView(APIView):
                 images = request.data.pop('image')
 
                 passed_item_image_data_list = []
-
                 for image in images:
                     item_image_data = {
                         'item': item_obj.id,
-                        'image': image
+                        'image': image,
                     }
 
                     item_image_serializer = ItemImageSerializer(data=item_image_data)
