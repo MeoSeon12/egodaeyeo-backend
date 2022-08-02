@@ -107,7 +107,7 @@ class ChatAlertView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
-    # 읽지않은 메세지 데이터 보내기
+    # 읽지않은 메시지 데이터 보내기
     def get(self, request, user_id):
 
         # 참가중인 채팅방

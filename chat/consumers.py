@@ -237,9 +237,8 @@ class AlertConsumer(AsyncConsumer):
             'status': received_data['status'],
         }
         
-        # 상대방 온메시지에 보냄
+        # 수신자에게 온메시지에 보냄
         other_user_chat_alert = f'user_chat_alert_{receiver_id}'
-
         
         await self.channel_layer.group_send(
             other_user_chat_alert,
