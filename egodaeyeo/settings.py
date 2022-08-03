@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
-import local_settings
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,13 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = local_settings.SECRET['secret']
+SECRET_KEY = os.environ.get('SECRET_KEY', "somesecret")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(os.environ.get("DEBUG", 1))
+# DEBUG = True
 
-ALLOWED_HOSTS = []
-
+# if os.environ.get('DJANGO_ALLOWED_HOSTS'):
+#     ALLOWED_HOSTS = [os.environ.get('DJANGO_ALLOWED_HOSTS').split(' ')]
+# else:
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -140,8 +143,6 @@ TEMPLATES = [
 ]
 
 
-
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
@@ -190,7 +191,11 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static'
+STATIC_URL = '/static'
+
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -217,11 +222,43 @@ REST_FRAMEWORK = {
 }
 
 
-SIMPLE_JWT = local_settings.SIMPLE_JWT
+SIMPLE_JWT = {
+	# Access 토큰 유효 시간 설정하기
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+	# Refresh 토큰 유효 시간 설정하기
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': False,
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+    'JWK_URL': None,
+    'LEEWAY': 0,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
+
+    'JTI_CLAIM': 'jti',
+
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+}
 
 #카카오 로그인 관련
-
-KAKAO_REST_API_KEY = local_settings.KAKAO_REST_API_KEY
+KAKAO_REST_API_KEY = os.environ.get('KAKAO_REST_API_KEY')
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
 ACCOUNT_EMAIL_REQUIRED = True            # email 필드 사용 o
@@ -231,12 +268,12 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 SITE_ID = 2 # for django.contrib.sites ----> localhost:8000
 
 # s3관련
-DEFAULT_FILE_STORAGE = local_settings.DEFAULT_FILE_STORAGE
+DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
 
-AWS_REGION = local_settings.AWS_REGION
-AWS_ACCESS_KEY_ID = local_settings.AWS_ACCESS_KEY_ID
-AWS_S3_SECRET_ACCESS_KEY = local_settings.AWS_S3_SECRET_ACCESS_KEY
-AWS_STORAGE_BUCKET_NAME = local_settings.AWS_STORAGE_BUCKET_NAME
+AWS_REGION = os.environ.get('AWS_REGION')
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_S3_SECRET_ACCESS_KEY = os.environ.get('AWS_S3_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
 
 AWS_S3_SECURE_URLS = False       # use http instead of https
 AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
