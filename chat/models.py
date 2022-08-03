@@ -35,3 +35,4 @@ class ChatMessage(models.Model):
     
     class Meta:
         db_table = "chat_messages"
+        ordering = "id"
