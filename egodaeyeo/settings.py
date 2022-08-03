@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', "somesecret")
 DEBUG = int(os.environ.get("DEBUG", 1))
 # DEBUG = True
 
-ALLOWED_HOSTS = ['3.39.128.176', '127.0.0.1']
+ALLOWED_HOSTS = ['3.37.128.154', '127.0.0.1']
 
 # Application definition
 
@@ -88,7 +88,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5500',
     'https://egodaeyeo.netlify.app',
-    'http://3.39.128.176'
+    'http://3.37.128.154'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -118,7 +118,7 @@ CORS_ALLOW_HEADERS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5500',
     'https://egodaeyeo.netlify.app',
-    'http://3.39.128.176',
+    'http://3.37.128.154',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
