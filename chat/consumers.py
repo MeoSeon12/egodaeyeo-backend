@@ -29,7 +29,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        print("disconnect", self.room_group_name)
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -250,8 +249,8 @@ class AlertConsumer(AsyncConsumer):
 
     # 웹소켓 연결종료
     async def websocket_disconnect(self, event):
-        print('disconnect', event)
-
+        pass
+    
     async def chat_message(self, event):
         await self.send({
             'type': 'websocket.send',
