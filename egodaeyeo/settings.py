@@ -88,6 +88,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5500',
     'https://egodaeyeo.netlify.app',
     'https://egorental.com',
+    'http://egorental.com',
     'http://3.37.128.154'
 ]
 
@@ -119,6 +120,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5500',
     'https://egodaeyeo.netlify.app',
     'https://egorental.com',
+    'http://egorental.com',
     'http://3.37.128.154',
 ]
 
