@@ -24,7 +24,7 @@ class ChatView(APIView):
         my_chat_rooms = ChatRoomModel.objects.filter(Q(inquirer=user.id) | Q(author=user.id))
 
         my_chat_rooms_serializer = ChatSerializer(my_chat_rooms, many=True)
-        print(my_chat_rooms_serializer)
+        print("채팅룸", my_chat_rooms_serializer.data)
         return Response(my_chat_rooms_serializer.data, status=status.HTTP_200_OK)
     
 
