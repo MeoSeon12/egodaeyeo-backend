@@ -1,3 +1,4 @@
+from django.test import override_script_prefix
 from rest_framework import serializers
 from chat.models import (
     ChatRoom as ChatRoomModel,
@@ -46,7 +47,7 @@ class ChatSerializer(serializers.ModelSerializer):
         
         
 class ChatRoomSerializer(serializers.ModelSerializer):
-    chat_messages = ChatMessageSerializer(many=True, source='chatmessage_set')
+    chat_messages = ChatMessageSerializer(many=True, source='chatmessage_set', order_by='id')
     title = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
     item_status = serializers.SerializerMethodField()
