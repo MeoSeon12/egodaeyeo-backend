@@ -1,4 +1,3 @@
-from django.test import override_script_prefix
 from rest_framework import serializers
 from chat.models import (
     ChatRoom as ChatRoomModel,
