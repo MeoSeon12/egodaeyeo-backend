@@ -14,7 +14,6 @@ class ChatMessageSerializer(serializers.ModelSerializer):
     date = serializers.SerializerMethodField()
 
     def get_time(self, obj):
-        print(obj)
         return obj.created_at.strftime('%p %I:%M')
     
     def get_date(self, obj):
@@ -25,6 +24,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
 
         fields = ['id', 'time', 'date', 'content', 'is_read',
                 'room', 'user', 'application', 'contract_type']
+        ordering = ['id']
 
 class ChatSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()

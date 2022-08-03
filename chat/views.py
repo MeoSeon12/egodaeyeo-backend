@@ -88,7 +88,6 @@ class ChatRoomView(APIView):
             for other_chat in other_chats:
                 other_chat.is_read = True
                 other_chat.save()
-            print(chat_room_serializer.data)
             return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
 
         except ChatRoomModel.DoesNotExist:
