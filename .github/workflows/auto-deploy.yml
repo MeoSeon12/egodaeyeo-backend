@@ -1,7 +1,5 @@
 name: Deploy to EC2
-on: 
-  push:
-    branches: [deploy-2]
+on: [push]
 
 jobs:
 
@@ -10,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@deploy-2
 
     - name: create env file
       run: |
         touch .env
         echo "${{ secrets.ENV_VARS }}" >> .env
     - name: create remote directory
-      uses: appleboy/ssh-action@v2
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
         username: ubuntu
@@ -34,7 +32,7 @@ jobs:
         remote_key: ${{ secrets.KEY }}
 
     - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v2
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
         username: ubuntu
