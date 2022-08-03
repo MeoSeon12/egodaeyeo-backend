@@ -84,10 +84,11 @@ class ChatRoomView(APIView):
             chat_room_serializer = ChatRoomSerializer(chat_room)
             
             #채팅방 접속시, 채팅읽음 상태 만드는 로직
-            other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=chat_room)).order_by('-created_at')
+            other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=chat_room))
             for other_chat in other_chats:
                 other_chat.is_read = True
                 other_chat.save()
+            print(chat_room_serializer.data)
             return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
 
         except ChatRoomModel.DoesNotExist:
