@@ -46,7 +46,7 @@ class ChatSerializer(serializers.ModelSerializer):
         
         
 class ChatRoomSerializer(serializers.ModelSerializer):
-    chat_messages = ChatMessageSerializer(many=True, source='chatmessage_set', order_by='id')
+    chat_messages = ChatMessageSerializer(many=True, source='chatmessage_set')
     title = serializers.SerializerMethodField()
     item = serializers.SerializerMethodField()
     item_status = serializers.SerializerMethodField()
@@ -54,6 +54,10 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     contract_status = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
     inquirer = serializers.SerializerMethodField()
+
+    def get_chat_messages(self, obj):
+        print(obj.chat_messages.all().order_by('id'))
+        return obj.chat_messages.all().order_by('id')
 
     def get_title(self, obj):
         return obj.item.title
