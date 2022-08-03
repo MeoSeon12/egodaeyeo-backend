@@ -31,9 +31,9 @@ services:
     command: daphne -u /tmp/daphne.sock egodaeyeo.asgi:application --bind 0.0.0.0 -p 8001
     ports:
       - 8001:8001
-    working_dir: /srv/docker-server/
+    working_dir: /usr/src/app/
     volumes:
-      - ./:/srv/docker-server/
+      - ./:/usr/src/app/
     env_file:
       - ./.env.prod
     expose:
