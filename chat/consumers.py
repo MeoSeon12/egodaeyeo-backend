@@ -200,6 +200,10 @@ class ContractConsumer(AsyncWebsocketConsumer):
         room_obj = ChatRoom.objects.get(id=room_id)
         user_obj = User.objects.get(id=sender_id)
         ChatMessage.objects.create(room=room_obj, user=user_obj, contract_type=contract_type, application=True)
+        if contract_type == "수락" or contract_type == "거절":
+            contract_message = ChatMessage.objects.get(Q(room=room_obj) & ~Q(user=user_obj) & Q(contract_type="신청"))
+            contract_message.contract_type = "확인"
+            contract_message.save()
 
 
 # 알람 컨슈머
