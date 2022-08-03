@@ -14,6 +14,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
     date = serializers.SerializerMethodField()
 
     def get_time(self, obj):
+        print(obj)
         return obj.created_at.strftime('%p %I:%M')
     
     def get_date(self, obj):
