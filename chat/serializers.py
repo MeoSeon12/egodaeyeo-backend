@@ -21,7 +21,6 @@ class ChatMessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChatMessageModel
-
         fields = ['id', 'time', 'date', 'content', 'is_read',
                 'room', 'user', 'application', 'contract_type']
 
