@@ -30,13 +30,13 @@ class ItemListView(APIView, PaginationHandlerMixin):
     
     def get(self, request):
         user = request.user
-        address_split = user.address.split(' ')[:2]
-        user_address = ' '.join(address_split)
         items = ItemModel.objects.filter(status="대여 가능").order_by('-created_at')
         categories = CategoryModel.objects.all()
         
         #유저가 주소를 설정 했을때 Query
         try:
+            address_split = user.address.split()[:2]
+            user_address = ' '.join(address_split)
             #시군구 까지 split해서 DB에서 쿼리 
             city = user.address.split()[0]
             ward_county = user.address.split()[1]

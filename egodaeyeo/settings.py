@@ -87,8 +87,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5500',
     'https://egodaeyeo.netlify.app',
+    'https://www.egorental.com',
     'https://egorental.com',
-    'http://egorental.com',
     'http://3.37.128.154'
 ]
 
@@ -119,8 +119,8 @@ CORS_ALLOW_HEADERS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5500',
     'https://egodaeyeo.netlify.app',
+    'https://www.egorental.com',
     'https://egorental.com',
-    'http://egorental.com',
     'http://3.37.128.154',
 ]
 
