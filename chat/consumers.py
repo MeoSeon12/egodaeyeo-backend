@@ -1,14 +1,12 @@
 from datetime import datetime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from asgiref.sync import async_to_sync
-from asgiref.sync import sync_to_async
 import locale
 from channels.consumer import AsyncConsumer
 from channels.db import database_sync_to_async
 from chat.models import ChatMessage, ChatRoom
 from user.models import User
-from contract.models import Contract
+from django.db.models import Q
 
 locale.setlocale(locale.LC_TIME, 'ko_KR')
 
