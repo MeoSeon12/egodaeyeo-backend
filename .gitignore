@@ -139,6 +139,10 @@ celerybeat.pid
 
 # Environments
 .env
+.env.dev
+.env.prod
+.env.postgres.dev
+.env.postgres.prod
 .venv
 env/
 venv/
