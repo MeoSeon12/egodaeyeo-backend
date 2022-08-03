@@ -8,7 +8,6 @@ from item.models import (
     Review as ReviewModel,
     Bookmark as BookmarkModel,
     ItemImage as ItemImageModel,
-    Review as ReviewModel
 )
 
 
@@ -38,19 +37,9 @@ class CategorySerializer(serializers.ModelSerializer):
 
 # 아이템 모델 직렬화
 class ItemSerializer(serializers.ModelSerializer):
-    user_address = serializers.SerializerMethodField()
     item_bookmarks = serializers.SerializerMethodField()
     item_inquiries = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
-    
-    def get_user_address(self, obj):
-        #아이템 등록자 주소//시군구 까지만 표기
-        try:
-            address_split = self.context['request'].user.address.split(' ')[:2]
-            city = ' '.join(address_split)
-            return city
-        except:
-            return None
     
     def get_item_bookmarks(self, obj):
         #아이템 찜 수
@@ -71,7 +60,7 @@ class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModel
         fields = ["id", "section", "category", "image", "title", "price", 
-                "time_unit", "user_address", "item_bookmarks", "item_inquiries"]
+                "time_unit", "item_bookmarks", "item_inquiries"]
 
 
 # 아이템 모델 직렬화 (마이페이지)
