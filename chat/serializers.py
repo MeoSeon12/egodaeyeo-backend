@@ -90,24 +90,3 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatRoomModel
         fields = ['id', 'title', 'item', 'item_status', 'is_reviewed', 'contract_status', 'inquirer', 'author', 'chat_messages']
-
-
-# class ChatAlertSerializer(serializers.ModelSerializer):
-#     room_id = serializers.SerializerMethodField()
-#     item_title = serializers.SerializerMethodField()
-#     chat_messages = serializers.SerializerMethodField()
-
-#     def get_room_id(self, obj):
-#         return obj.id
-
-#     def get_item_title(self, obj):
-#         return obj.item.title
-
-#     def get_chat_messages(self, obj):
-#         unread_messages = ChatMessageModel.objects.filter(
-#             Q(room=obj.id) & ~Q(user_id=self.context) & Q(is_read=False))
-#         return unread_messages.values()
-
-#     class Meta:
-#         model = ChatRoomModel
-#         fields = ['room_id', 'item_title', 'chat_messages']
