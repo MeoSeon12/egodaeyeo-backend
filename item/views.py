@@ -83,6 +83,7 @@ class ItemListView(APIView, PaginationHandlerMixin):
         }
         
         return Response(data, status=status.HTTP_200_OK)
+    
 
 # 물품 상세페이지 뷰
 class DetailView(APIView):
@@ -134,7 +135,6 @@ class DetailView(APIView):
             # 북마크 갯수 갱신
             bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
             return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_201_CREATED)
-
 
     # 게시글 삭제
     def delete(self, request, item_id):

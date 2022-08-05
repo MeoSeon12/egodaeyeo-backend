@@ -27,8 +27,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', "somesecret")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", 1))
 # DEBUG = True
-
-ALLOWED_HOSTS = ['3.37.128.154', '127.0.0.1']
+if os.environ.get('DJANGO_ALLOWED_HOSTS'):
+    ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split()
+else:
+    ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -87,8 +89,10 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5500',
     'https://egodaeyeo.netlify.app',
-    'https://www.egorental.com',
     'https://egorental.com',
+    'https://www.egorental.com',
+    'https://egorentalback.link',
+    'https://www.egorentalback.link',
     'http://3.37.128.154'
 ]
 
@@ -119,12 +123,16 @@ CORS_ALLOW_HEADERS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5500',
     'https://egodaeyeo.netlify.app',
-    'https://www.egorental.com',
     'https://egorental.com',
+    'https://www.egorental.com',
+    'https://egorentalback.link',
+    'https://www.egorentalback.link',
     'http://3.37.128.154',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ROOT_URLCONF = 'egodaeyeo.urls'
 
@@ -222,7 +230,6 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser'
     ]
 }
-
 
 SIMPLE_JWT = {
 	# Access 토큰 유효 시간 설정하기
