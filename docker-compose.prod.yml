@@ -38,14 +38,14 @@ services:
     build: .
     command: daphne -u /tmp/daphne.sock egodaeyeo.asgi:application --bind 0.0.0.0 -p 8001
     ports:
-      - 8001:8001
+      - 8080:8080
     working_dir: /usr/src/app/
     volumes:
       - ./:/usr/src/app/
     env_file:
       - ./.env.prod
     expose:
-      - 8001
+      - 8080
     restart: always
 
     
