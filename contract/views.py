@@ -73,7 +73,6 @@ class ContractView(APIView):
         
         return JsonResponse({"msg": "계약 수정 완료", "status": contract.status, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
         
-    
     #대여신청 거절 클릭시
     def delete(self, request, item_id):
         user_id = request.user.id

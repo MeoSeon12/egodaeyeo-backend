@@ -19,6 +19,7 @@ class ChatView(APIView):
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
 
+    #참여하고있는 전체 채팅방 정보 불러오기
     def get(self, request):
         user = request.user
         my_chat_rooms = ChatRoomModel.objects.filter(Q(inquirer=user.id) | Q(author=user.id))
@@ -27,7 +28,7 @@ class ChatView(APIView):
         
         return Response(my_chat_rooms_serializer.data, status=status.HTTP_200_OK)
     
-
+    #채팅방 생성
     def post(self, request, item_id):
         inquirer = request.user
         item = ItemModel.objects.get(id=item_id)

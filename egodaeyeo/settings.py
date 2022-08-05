@@ -223,7 +223,6 @@ REST_FRAMEWORK = {
     ]
 }
 
-
 SIMPLE_JWT = {
 	# Access 토큰 유효 시간 설정하기
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),

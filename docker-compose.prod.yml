@@ -38,6 +38,7 @@ services:
       - ./.env.prod
     expose:
       - 8001
+    restart: always
 
     
 volumes:
