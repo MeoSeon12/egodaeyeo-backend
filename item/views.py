@@ -71,11 +71,6 @@ class ItemListView(APIView, PaginationHandlerMixin):
         
         if page is not None:
             item_serializer = self.get_paginated_response(ItemSerializer(page, many=True, context={"request": request}).data)
-            page_url = item_serializer.data.get('next')
-            print("페이지 유알엘",page_url)
-            protocol = page_url.split("://")[0] #http?
-            print("프로토콜",protocol)
-            
         else:
             item_serializer = ItemSerializer(items, many=True, context={"request": request})
         
