@@ -36,7 +36,7 @@ services:
     restart: always
   asgiserver:
     build: .
-    command: daphne -u /tmp/daphne.sock egodaeyeo.asgi:application --bind 0.0.0.0 -p 8001
+    command: daphne -u /tmp/daphne.sock egodaeyeo.asgi:application --bind 0.0.0.0 -p 8080
     ports:
       - 8080:8080
     working_dir: /usr/src/app/
