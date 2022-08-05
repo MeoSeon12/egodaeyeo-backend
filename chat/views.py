@@ -96,9 +96,10 @@ class ChatRoomView(APIView):
 
     # 실시간으로 바로 읽은 메시지 읽음 처리
     def put(self, request, room_id):
-        unread_message = ChatMessageModel.objects.get(room_id=room_id, is_read=False)
-        unread_message.is_read = True
-        unread_message.save()
+        unread_messages = ChatMessageModel.objects.filter(room_id=room_id, is_read=False)
+        for unread_message in unread_messages:
+            unread_message.is_read = True
+            unread_message.save()
         
         return Response(status=status.HTTP_200_OK)
 
