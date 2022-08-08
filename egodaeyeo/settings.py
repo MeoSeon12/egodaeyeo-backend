@@ -235,7 +235,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
 	# Access 토큰 유효 시간 설정하기
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=10),
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=1),
 	# Refresh 토큰 유효 시간 설정하기
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
 

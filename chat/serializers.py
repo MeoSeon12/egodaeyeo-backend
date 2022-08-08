@@ -57,28 +57,43 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     inquirer = serializers.SerializerMethodField()
 
     def get_title(self, obj):
-        return obj.item.title
+        try:
+            return obj.item.title
+        except:
+            return '삭제된 물품입니다'
 
     def get_item(self, obj):
-        return obj.item.id
+        try:
+            return obj.item.id
+        except:
+            return
     
     def get_item_status(self, obj):
-        return obj.item.status
+        try:
+            return obj.item.status
+        except:
+            return '삭제됨'
     
     def get_contract_status(self, obj):
-        contracts = obj.item.contract_set.values()
-        contract_list = [i for i in contracts]
-        
-        if contract_list != []:
-            contract_status = contract_list[0]['status']
+        try:
+            contracts = obj.item.contract_set.values()
+            contract_list = [i for i in contracts]
             
+            if contract_list != []:
+                contract_status = contract_list[0]['status']
+                
             return contract_status
+        except:
+            return
 
     def get_is_reviewed(self, obj):
-        reviews = obj.item.review_set.values()
-        review_authors = [review['user_id'] for review in reviews]
-        
-        return obj.inquirer.id in review_authors
+        try:
+            reviews = obj.item.review_set.values()
+            review_authors = [review['user_id'] for review in reviews]
+            
+            return obj.inquirer.id in review_authors
+        except:
+            return
 
     def get_author(self, obj):
         nickname = obj.author.nickname

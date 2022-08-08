@@ -30,7 +30,6 @@ class ItemListView(APIView, PaginationHandlerMixin):
     
     def get(self, request):
         user_id = request.GET.get('user', "")
-        print(user_id)
         user_address = ""
         items = ItemModel.objects.filter(status="대여 가능").order_by('-created_at')
         categories = CategoryModel.objects.all()
