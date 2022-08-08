@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
-
+import local_settings
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,10 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = os.environ.get('SECRET_KEY', "somesecret")
+# SECRET_KEY = os.environ.get('SECRET_KEY', "somesecret")
+SECRET_KEY = local_settings.SECRET['secret']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("DEBUG", 1))
+# DEBUG = int(os.environ.get("DEBUG", 1))
+DEBUG = True
 # DEBUG = True
 if os.environ.get('DJANGO_ALLOWED_HOSTS'):
     ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split()
@@ -155,17 +157,17 @@ TEMPLATES = [
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get('SQL_ENGINE',"django.db.backends.sqlite3"),
-        'NAME': os.environ.get('SQL_DATABASE', BASE_DIR / "db.sqlite3"),
-        'USER': os.environ.get('SQL_USER', 'user'),
-        'PASSWORD': os.environ.get('SQL_PASSWORD', 'password'),
-        'HOST': os.environ.get('SQL_HOST', 'localhost'),
-        'PORT': os.environ.get('SQL_PORT', '5432'),
-    }
-}
+DATABASES = local_settings.DATABASES
+# DATABASES = {
+#     'default': {
+#         'ENGINE': os.environ.get('SQL_ENGINE',"django.db.backends.sqlite3"),
+#         'NAME': os.environ.get('SQL_DATABASE', BASE_DIR / "db.sqlite3"),
+#         'USER': os.environ.get('SQL_USER', 'user'),
+#         'PASSWORD': os.environ.get('SQL_PASSWORD', 'password'),
+#         'HOST': os.environ.get('SQL_HOST', 'localhost'),
+#         'PORT': os.environ.get('SQL_PORT', '5432'),
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -233,7 +235,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
 	# Access 토큰 유효 시간 설정하기
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=10),
 	# Refresh 토큰 유효 시간 설정하기
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
 
@@ -267,8 +269,8 @@ SIMPLE_JWT = {
 }
 
 #카카오 로그인 관련
-KAKAO_REST_API_KEY = os.environ.get('KAKAO_REST_API_KEY')
-
+# KAKAO_REST_API_KEY = os.environ.get('KAKAO_REST_API_KEY')
+KAKAO_REST_API_KEY = local_settings.KAKAO_REST_API_KEY
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
 ACCOUNT_EMAIL_REQUIRED = True            # email 필드 사용 o
 ACCOUNT_USERNAME_REQUIRED = False        # username 필드 사용 x
@@ -276,13 +278,17 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 SITE_ID = 2 # for django.contrib.sites ----> localhost:8000
 
+DEFAULT_FILE_STORAGE = local_settings.DEFAULT_FILE_STORAGE
+AWS_REGION = local_settings.AWS_REGION
+AWS_ACCESS_KEY_ID = local_settings.AWS_ACCESS_KEY_ID
+AWS_S3_SECRET_ACCESS_KEY = local_settings.AWS_S3_SECRET_ACCESS_KEY
+AWS_STORAGE_BUCKET_NAME = local_settings.AWS_STORAGE_BUCKET_NAME
 # s3관련
-DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
-
-AWS_REGION = os.environ.get('AWS_REGION')
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_S3_SECRET_ACCESS_KEY = os.environ.get('AWS_S3_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+# DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
+# AWS_REGION = os.environ.get('AWS_REGION')
+# AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+# AWS_S3_SECRET_ACCESS_KEY = os.environ.get('AWS_S3_SECRET_ACCESS_KEY')
+# AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
 
 AWS_S3_SECURE_URLS = False       # use http instead of https
 AWS_QUERYSTRING_AUTH = False     # don't add complex authentication-related query parameters for requests
