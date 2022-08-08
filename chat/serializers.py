@@ -19,11 +19,12 @@ class ChatMessageSerializer(serializers.ModelSerializer):
     def get_date(self, obj):
         return obj.created_at.strftime('%Y년 %m월 %d일 %A')
 
+
     class Meta:
         model = ChatMessageModel
-
         fields = ['id', 'time', 'date', 'content', 'is_read',
                 'room', 'user', 'application', 'contract_type']
+
 
 class ChatSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
@@ -38,6 +39,7 @@ class ChatSerializer(serializers.ModelSerializer):
         nickname = obj.inquirer.nickname
         id = obj.inquirer.id
         return {"id": id, "nickname": nickname}
+
 
     class Meta:
         model = ChatRoomModel
@@ -88,27 +90,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
         id = obj.inquirer.id
         return {"id": id, "nickname": nickname}
 
+
     class Meta:
         model = ChatRoomModel
         fields = ['id', 'title', 'item', 'item_status', 'is_reviewed', 'contract_status', 'inquirer', 'author', 'chat_messages']
-
-
-# class ChatAlertSerializer(serializers.ModelSerializer):
-#     room_id = serializers.SerializerMethodField()
-#     item_title = serializers.SerializerMethodField()
-#     chat_messages = serializers.SerializerMethodField()
-
-#     def get_room_id(self, obj):
-#         return obj.id
-
-#     def get_item_title(self, obj):
-#         return obj.item.title
-
-#     def get_chat_messages(self, obj):
-#         unread_messages = ChatMessageModel.objects.filter(
-#             Q(room=obj.id) & ~Q(user_id=self.context) & Q(is_read=False))
-#         return unread_messages.values()
-
-#     class Meta:
-#         model = ChatRoomModel
-#         fields = ['room_id', 'item_title', 'chat_messages']

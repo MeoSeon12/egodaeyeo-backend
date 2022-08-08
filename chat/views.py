@@ -19,6 +19,7 @@ class ChatView(APIView):
     permission_classes = [IsAddressOrReadOnly]
     authentication_classes = [JWTAuthentication]
 
+    #참여하고있는 전체 채팅방 정보 불러오기
     def get(self, request):
         user = request.user
         my_chat_rooms = ChatRoomModel.objects.filter(Q(inquirer=user.id) | Q(author=user.id))
@@ -27,7 +28,7 @@ class ChatView(APIView):
         
         return Response(my_chat_rooms_serializer.data, status=status.HTTP_200_OK)
     
-
+    #채팅방 생성
     def post(self, request, item_id):
         inquirer = request.user
         item = ItemModel.objects.get(id=item_id)
@@ -84,7 +85,7 @@ class ChatRoomView(APIView):
             chat_room_serializer = ChatRoomSerializer(chat_room)
             
             #채팅방 접속시, 채팅읽음 상태 만드는 로직
-            other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=chat_room)).order_by('-created_at')
+            other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=chat_room))
             for other_chat in other_chats:
                 other_chat.is_read = True
                 other_chat.save()
@@ -95,9 +96,10 @@ class ChatRoomView(APIView):
 
     # 실시간으로 바로 읽은 메시지 읽음 처리
     def put(self, request, room_id):
-        unread_message = ChatMessageModel.objects.get(room_id=room_id, is_read=False)
-        unread_message.is_read = True
-        unread_message.save()
+        unread_messages = ChatMessageModel.objects.filter(room_id=room_id, is_read=False)
+        for unread_message in unread_messages:
+            unread_message.is_read = True
+            unread_message.save()
         
         return Response(status=status.HTTP_200_OK)
 
