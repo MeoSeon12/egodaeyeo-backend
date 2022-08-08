@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', "somesecret")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", 1))
-# DEBUG = True
+
 if os.environ.get('DJANGO_ALLOWED_HOSTS'):
     ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split()
 else:
@@ -235,7 +235,7 @@ SIMPLE_JWT = {
 	# Access 토큰 유효 시간 설정하기
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
 	# Refresh 토큰 유효 시간 설정하기
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -278,7 +278,6 @@ SITE_ID = 2 # for django.contrib.sites ----> localhost:8000
 
 # s3관련
 DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
-
 AWS_REGION = os.environ.get('AWS_REGION')
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_S3_SECRET_ACCESS_KEY = os.environ.get('AWS_S3_SECRET_ACCESS_KEY')
