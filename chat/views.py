@@ -1,4 +1,5 @@
 from datetime import timedelta
+from multiprocessing import context
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -82,7 +83,7 @@ class ChatRoomView(APIView):
         
         try:
             chat_room = ChatRoomModel.objects.get(id=room_id)
-            chat_room_serializer = ChatRoomSerializer(chat_room)
+            chat_room_serializer = ChatRoomSerializer(chat_room, context={"request": request})
             
             #채팅방 접속시, 채팅읽음 상태 만드는 로직
             other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=chat_room))

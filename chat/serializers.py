@@ -3,6 +3,7 @@ from chat.models import (
     ChatRoom as ChatRoomModel,
     ChatMessage as ChatMessageModel
 )
+from contract.models import Contract as ContractModel
 from django.db.models import Q
 import locale
 
@@ -66,13 +67,13 @@ class ChatRoomSerializer(serializers.ModelSerializer):
         return obj.item.status
     
     def get_contract_status(self, obj):
-        contracts = obj.item.contract_set.values()
-        contract_list = [i for i in contracts]
-        
-        if contract_list != []:
-            contract_status = contract_list[0]['status']
-            
-            return contract_status
+        inquirer_id = obj.inquirer.id
+        item_id = obj.item.id
+        try:
+            contract = ContractModel.objects.get(item=item_id, user=inquirer_id)
+            return contract.status
+        except ContractModel.DoesNotExist:
+            return
 
     def get_is_reviewed(self, obj):
         reviews = obj.item.review_set.values()
