@@ -33,6 +33,7 @@ class User(AbstractBaseUser):
     address = models.TextField("주소", max_length=256)
     image = models.ImageField("이미지", default="../static/default_profile.jpg", upload_to='profile/')
     score = models.PositiveIntegerField("유저 점수", blank=True, null=True, validators=[MaxValueValidator(100), MinValueValidator(1)])
+    get_reviews_count = models.PositiveIntegerField("유저가 받은 리뷰 갯수", blank=True, null=True)
     join_date = models.DateTimeField("가입일", auto_now_add=True)
     
     # 활성화 여부
