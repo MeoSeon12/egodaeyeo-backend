@@ -125,15 +125,18 @@ class ChatAlertView(APIView):
                 # 읽지않은 채팅
                 latest_unread_chat = joined_chatroom.chatmessage_set.filter(is_read=False, application=False).exclude(user=user_id)
                 if latest_unread_chat.exists():
-                    latest_unread_chat = latest_unread_chat.last()
-                    latest_unread_chat = {
-                        'room_id': joined_chatroom.id,
-                        'title': joined_chatroom.item.title,
-                        'sender': latest_unread_chat.user.nickname,
-                        'created_at': latest_unread_chat.created_at,
-                        'status': None,
-                    }
-                    unread_message_list.append(latest_unread_chat)
+                    try:
+                        joined_chatroom.item
+                    except:
+                        latest_unread_chat = latest_unread_chat.last()
+                        latest_unread_chat = {
+                            'room_id': joined_chatroom.id,
+                            'title': joined_chatroom.item.title,
+                            'sender': latest_unread_chat.user.nickname,
+                            'created_at': latest_unread_chat.created_at,
+                            'status': None,
+                        }
+                        unread_message_list.append(latest_unread_chat)
 
                 # 읽지않은 거래상태
                 latest_unread_contract = joined_chatroom.chatmessage_set.filter(is_read=False, application=True).exclude(user=user_id)
