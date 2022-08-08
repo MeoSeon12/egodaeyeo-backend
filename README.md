@@ -31,10 +31,10 @@
 <br><br><br>
 
 ## 🤷🏻‍♂️🤷🏻‍♀️ 머선12조 팀원 및 역할분담
-<b>김규민</b><br>물품 목록 페이지<br> 마이페이지<br> 소셜로그인<br>검색 기능<br><br>
-<b>김철현</b><br>회원가입/로그인<br> 소셜로그인<br>리뷰 모달, 채팅 모달<br><br>
-<b>김성호</b><br>메인 페이지<br><br><br>
-<b>최재완</b><br>물품 상세페이지<br>물품 등록 페이지<br><br>
+<b>김규민</b><br>물품 목록 페이지<br> 마이페이지<br> 소셜로그인<br>검색 기능<br>Contract 기능<br>채팅 기능<br>백엔드 배포<br><br>
+<b>김철현</b><br>회원가입/로그인<br> 소셜로그인<br>리뷰 모달, 채팅 모달<br>채팅 기능<br>백엔드 배포<br><br>
+<b>최재완</b><br>물품 상세페이지<br>물품 등록 페이지<br>알람 기능<br>채팅 기능<br>프론트 배포<br>프론트 JS리팩토링<br><br>
+<b>김성호</b><br><br>
 <br><br><br>
 
 ## 🕘 프로젝트 일정
@@ -53,14 +53,11 @@
 <br><br>
 ![image](https://user-images.githubusercontent.com/104349901/177922961-e16b4030-ba7a-4a69-be7f-76509f629abf.png)
 <br><br>
-## 📕 API 설계
-<a href="https://www.notion.so/91b31259354248b0943c80d659eb5cec?v=ea9ec0a1087548c0abfbd6e7a4c28fb0">노션 바로가기</a>
-<br><br><br>
 
 ## ⚙ DB 설계 ERD
 <a href="https://docs.google.com/spreadsheets/d/1ZLFdnhCmHF1gWQ0VjzHNtW1nglS0MMpMtOdWKkzBeQo/edit?usp=sharing">구글 시트 바로가기</a>  
 <br>
-![image](https://user-images.githubusercontent.com/104349901/178718045-dff3343b-d75e-4a09-af1d-a2403a581261.png)
+![image](https://user-images.githubusercontent.com/104349901/182680832-53d8a2bb-262f-42e4-8869-83bdfd25cb94.png)
 
 <br><br><br>
 
