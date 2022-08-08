@@ -41,11 +41,11 @@ class ChatView(APIView):
                 'status': '채팅방 조회됨',
                 'id': chat_room.id,
                 'author': {
-                    'id:': chat_room.author.id,
+                    'id': chat_room.author.id,
                     'nickname': chat_room.author.nickname
                 },
                 'inquirer': {
-                    'id:': chat_room.inquirer.id,
+                    'id': chat_room.inquirer.id,
                     'nickname': chat_room.inquirer.nickname
                 }
             }
@@ -62,11 +62,11 @@ class ChatView(APIView):
                 'status': '채팅방 생성됨',
                 'id': chat_room.id,
                 'author': {
-                    'id:': chat_room.author.id,
+                    'id': chat_room.author.id,
                     'nickname': chat_room.author.nickname
                 },
                 'inquirer': {
-                    'id:': chat_room.inquirer.id,
+                    'id': chat_room.inquirer.id,
                     'nickname': chat_room.inquirer.nickname
                 }
             }
