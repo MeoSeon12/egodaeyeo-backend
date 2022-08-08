@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from item.serializers import MyPageItemSerializer
 from contract.models import Contract as ContractModel
+from chat.models import ChatRoom as ChatRoomModel
 from datetime import datetime
 
 
