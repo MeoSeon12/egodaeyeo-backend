@@ -19,9 +19,6 @@ class ChatRoom(models.Model):
 
     class Meta:
         db_table = "chatrooms"
-        
-    def __str__(self):
-        return f"[채팅방] {self.author.nickname} / {self.inquirer.nickname}"
 
 
 class ChatMessage(models.Model):

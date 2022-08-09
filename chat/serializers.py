@@ -94,14 +94,20 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             return
 
     def get_author(self, obj):
-        nickname = obj.author.nickname
-        id = obj.author.id
-        return {"id": id, "nickname": nickname}
+        try:
+            nickname = obj.author.nickname
+            id = obj.author.id
+            return {"id": id, "nickname": nickname}
+        except:
+            return "탈퇴유저"
 
     def get_inquirer(self, obj):
-        nickname = obj.inquirer.nickname
-        id = obj.inquirer.id
-        return {"id": id, "nickname": nickname}
+        try:
+            nickname = obj.inquirer.nickname
+            id = obj.inquirer.id
+            return {"id": id, "nickname": nickname}
+        except:
+            return "탈퇴유저"
 
 
     class Meta:
