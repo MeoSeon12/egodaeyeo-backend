@@ -166,7 +166,7 @@ class MyPageView(APIView):
             return Response(ongoing_contract_serializer.data, status=status.HTTP_200_OK)
 
         if tab == "closed":
-            my_closed_contracts = ContractModel.objects.filter(Q(status='대여 종료') & Q(user=user.id)).order_by('-id')
+            my_closed_contracts = ContractModel.objects.filter((Q(status='대여 종료') & Q(user=user.id)) | Q(item__user=user_id)).order_by('-id')
             closed_contract_serializer = MyPageContractSerializer(my_closed_contracts, many=True)
             return Response(closed_contract_serializer.data, status=status.HTTP_200_OK)
 
