@@ -221,6 +221,19 @@ class ItemPostView(APIView):
         # 아이템 모델 벨리데이션 불합격
         else:
             return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def put(self, request, item_id):
+        user = request.user
+        status_ = request.data.get('status')
+        
+        try:
+            item = ItemModel.objects.get(id=item_id, user=user)
+            item.status = status_
+            item.save()
+            return Response({"msg": "아이템이 재등록 되었습니다."}, status=status.HTTP_200_OK)
+        except ItemModel.DoesNotExist:
+            return Response({"msg": "아이템이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+        
 
 
 # 물품 수정 페이지

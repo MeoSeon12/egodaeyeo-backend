@@ -7,6 +7,7 @@ urlpatterns = [
     path('details/<int:item_id>', DetailView.as_view()),
     path('upload', ItemPostView.as_view()),
     path('update/<int:item_id>', ItemUpdateView.as_view()),
+    path('reupload/<int:item_id>', ItemPostView.as_view()),
     path('reviews/<int:item_id>', ReviewView.as_view()),
     path('contracts/start/<int:item_id>', ContractView.as_view()),
     path('contracts/end/<int:item_id>', ContractView.as_view()),
