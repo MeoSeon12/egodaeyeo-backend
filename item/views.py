@@ -318,12 +318,9 @@ class ReviewView(APIView):
         # 리뷰 평점 유저 스코어에 반영
         # 리뷰 평점/평균 평점을 가져온 후 다시 평균 계산해서 저장
         item.user.score = int(item.user.score or 0) #유저 스코어가 null일 경우에 0으로 반환
-        print(item.user.score, "유저스코어")
         item.user.get_reviews_count = int(item.user.get_reviews_count or 0) 
-        print(item.user.get_reviews_count, "리뷰카운트")
         item.user.score = ((item.user.score * item.user.get_reviews_count) + (int(rating) * 20)) / (item.user.get_reviews_count + 1)
         item.user.get_reviews_count += 1
-        print(item.user.score, "계산후")
         item.user.save()
 
         review_data = {
