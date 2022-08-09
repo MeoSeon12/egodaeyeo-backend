@@ -228,11 +228,16 @@ class ItemPostView(APIView):
         
         try:
             item = ItemModel.objects.get(id=item_id, user=user)
+            
+            if item.status == "대여 가능":
+                return Response({"msg": "이미 재등록한 물품입니다."})
+            
             item.status = status_
             item.save()
-            return Response({"msg": "아이템이 재등록 되었습니다."}, status=status.HTTP_200_OK)
+            
+            return Response({"msg": "물품이 재등록 되었습니다."}, status=status.HTTP_200_OK)
         except ItemModel.DoesNotExist:
-            return Response({"msg": "아이템이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"msg": "물품이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
         
 
 
