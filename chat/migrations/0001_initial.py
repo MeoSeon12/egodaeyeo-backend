@@ -11,8 +11,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contract', '0004_alter_contract_status'),
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('item', '0008_alter_item_status'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
@@ -43,6 +43,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'chat_messages',
+                'ordering': ['id'],
             },
         ),
     ]
