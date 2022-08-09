@@ -9,17 +9,13 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
-
-    - name: create env file
-      run: |
-        touch .env
-        echo "${{ secrets.ENV_VARS }}" >> .env
+      
     - name: create remote directory
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
         username: ubuntu
-        key: ${{ secrets.KEY }}
+        key: ${{ secrets.PRIVATE_KEY }}
         script: mkdir -p /home/ubuntu/srv/ubuntu
 
     - name: copy source via ssh key
@@ -29,13 +25,13 @@ jobs:
         remote_path: /home/ubuntu/srv/ubuntu/
         remote_host: ${{ secrets.HOST }}
         remote_user: ubuntu
-        remote_key: ${{ secrets.KEY }}
+        remote_key: ${{ secrets.PRIVATE_KEY }}
 
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
         username: ubuntu
-        key: ${{ secrets.KEY }}
+        key: ${{ secrets.PRIVATE_KEY }}
         script: |
           sh /home/ubuntu/config/scripts/deploy.sh
