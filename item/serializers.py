@@ -169,16 +169,11 @@ class DetailSerializer(serializers.ModelSerializer):
         id =obj.user.id
         nickname = obj.user.nickname
         address = obj.user.address
-        score = obj.user.score
+        user['score'] = obj.user.score
         user['image'] = image
         user['id'] = id
         user['nickname'] = nickname
         user['address'] = address
-        user_review_count = ReviewModel.objects.filter(item__user=obj.user.id).count()
-        if user_review_count < 1:
-            user['score'] = score
-        else:
-            user['score'] = score / user_review_count
 
         return user
 
