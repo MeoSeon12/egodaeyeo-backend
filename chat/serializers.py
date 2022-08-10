@@ -37,7 +37,7 @@ class ChatSerializer(serializers.ModelSerializer):
             id = obj.author.id
             return {"id": id, "nickname": nickname}
         except:
-            return "탈퇴유저"
+            return {"nickname": "탈퇴유저"}
 
     def get_inquirer(self, obj):
         try:
@@ -45,7 +45,7 @@ class ChatSerializer(serializers.ModelSerializer):
             id = obj.inquirer.id
             return {"id": id, "nickname": nickname}
         except:
-            return "탈퇴유저"
+            return {"nickname": "탈퇴유저"}
 
     class Meta:
         model = ChatRoomModel
@@ -81,11 +81,12 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             return '삭제됨'
     
     def get_contract_status(self, obj):
-        inquirer_id = obj.inquirer.id
-        item_id = obj.item.id
+        inquirer = obj.inquirer
+        item = obj.item
         try:
-            contract = ContractModel.objects.get(item=item_id, user=inquirer_id)
-            return contract.status
+            if item and inquirer:
+                contract = ContractModel.objects.get(item=item.id, user=inquirer.id)
+                return contract.status
         except ContractModel.DoesNotExist:
             return
 
@@ -104,7 +105,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             id = obj.author.id
             return {"id": id, "nickname": nickname}
         except:
-            return "탈퇴유저"
+            return {"nickname": "탈퇴유저"}
 
     def get_inquirer(self, obj):
         try:
@@ -112,7 +113,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             id = obj.inquirer.id
             return {"id": id, "nickname": nickname}
         except:
-            return "탈퇴유저"
+            return {"nickname": "탈퇴유저"}
 
 
     class Meta:
