@@ -40,19 +40,41 @@ class ChatView(APIView):
             # 존재하는 채팅방이 있다면, 채팅방을 가져온다.
             chat_room = ChatRoomModel.objects.get(
                 inquirer=inquirer.id, author=author.id, item=item.id)
-            chat_room = {
-                'status': '채팅방 조회됨',
-                'id': chat_room.id,
-                'author': {
-                    'id': chat_room.author.id,
-                    'nickname': chat_room.author.nickname
-                },
-                'inquirer': {
-                    'id': chat_room.inquirer.id,
-                    'nickname': chat_room.inquirer.nickname
+            if chat_room.contract:
+                #채팅방이 존재하는데 contract가 이미 종료된 채팅방이라면 새롭게 생성
+                if chat_room.contract.status == "대여 종료":
+                    chat_room = ChatRoomModel.objects.create(
+                        inquirer=inquirer,
+                        author=author,
+                        item=item
+                    )
+                    chat_room = {
+                        'status': '채팅방 생성됨',
+                        'id': chat_room.id,
+                        'author': {
+                            'id': chat_room.author.id,
+                            'nickname': chat_room.author.nickname
+                        },
+                        'inquirer': {
+                            'id': chat_room.inquirer.id,
+                            'nickname': chat_room.inquirer.nickname
+                        }
+                    }
+                    return Response(chat_room, status=status.HTTP_200_OK)
+            else:
+                chat_room = {
+                    'status': '채팅방 조회됨',
+                    'id': chat_room.id,
+                    'author': {
+                        'id': chat_room.author.id,
+                        'nickname': chat_room.author.nickname
+                    },
+                    'inquirer': {
+                        'id': chat_room.inquirer.id,
+                        'nickname': chat_room.inquirer.nickname
+                    }
                 }
-            }
-            return Response(chat_room, status=status.HTTP_200_OK)
+                return Response(chat_room, status=status.HTTP_200_OK)
 
         except ChatRoomModel.DoesNotExist:
             # 존재하는 채팅방이 없다면, 새롭게 생성

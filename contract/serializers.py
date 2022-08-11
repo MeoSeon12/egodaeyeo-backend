@@ -1,3 +1,4 @@
+from winreg import QueryValue
 from rest_framework import serializers
 from item.serializers import MyPageItemSerializer
 from contract.models import Contract as ContractModel
@@ -6,6 +7,22 @@ from datetime import datetime
 
 
 class ContractSerializer(serializers.ModelSerializer):
+    
+    def create(self, validated_data):
+        contract = ContractModel(**validated_data)
+        contract.save()
+        
+        query_data = {
+            "inquirer": contract.user,
+            "author": contract.item.user,
+            "item": contract.item,
+        }
+        
+        chat_room = ChatRoomModel.objects.get(**query_data)
+        chat_room.contract = contract
+        chat_room.save()
+        
+        return contract
 
     class Meta:
         model = ContractModel
@@ -15,6 +32,7 @@ class MyPageContractSerializer(serializers.ModelSerializer):
     item = MyPageItemSerializer()
     time_remaining = serializers.SerializerMethodField()
     rental_date = serializers.SerializerMethodField()
+    room_id = serializers.SerializerMethodField()
 
     # 대여 종료일까지 시간
     def get_time_remaining(self, obj):
@@ -48,7 +66,15 @@ class MyPageContractSerializer(serializers.ModelSerializer):
         end_date = str(obj.end_date)
         end_date = end_date.split(' ')[0]
         return f"{start_date} ~ {end_date}"
+    
+    #방id
+    def get_room_id(self, obj):
+        try:
+            chat_room_id = obj.item.chatroom_set.get(inquirer=obj.user).id
+            return chat_room_id
+        except:
+            return 
 
     class Meta:
         model = ContractModel
-        fields = ["id", "rental_date", "time_remaining", "item"]
+        fields = ["id", "rental_date", "time_remaining", "item", "room_id"]

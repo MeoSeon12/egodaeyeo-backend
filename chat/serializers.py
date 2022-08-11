@@ -81,14 +81,13 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             return '삭제됨'
     
     def get_contract_status(self, obj):
-        inquirer = obj.inquirer
-        item = obj.item
-        try:
-            if item and inquirer:
-                contract = ContractModel.objects.get(item=item.id, user=inquirer.id)
-                return contract.status
-        except ContractModel.DoesNotExist:
+        contract = obj.contract
+
+        if contract:    
+            return contract.status
+        else:
             return
+        
 
     def get_is_reviewed(self, obj):
         try:
