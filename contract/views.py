@@ -1,5 +1,3 @@
-from multiprocessing import context
-from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -23,7 +21,7 @@ class ContractView(APIView):
         contract = ContractModel.objects.get(item=item, user=chatroom.inquirer)
         contract_serializer = ContractSerializer(contract)
         
-        return JsonResponse(contract_serializer.data, status=status.HTTP_200_OK)
+        return Response(contract_serializer.data, status=status.HTTP_200_OK)
 
     # 대여신청 버튼 클릭시
     def post(self, request, item_id):
@@ -35,7 +33,7 @@ class ContractView(APIView):
         try:
             contract = ContractModel.objects.get(item=item, user=user_id)
             if contract:
-                return JsonResponse({"msg": "이미 대여신청한 물품입니다."})
+                return Response({"msg": "이미 대여신청한 물품입니다."})
             
         except ContractModel.DoesNotExist:
             contract_data = {
@@ -50,9 +48,9 @@ class ContractView(APIView):
         
             if contract_serializer.is_valid():
                 contract_serializer.save()
-                return JsonResponse(contract_serializer.data, status=status.HTTP_200_OK)
+                return Response(contract_serializer.data, status=status.HTTP_200_OK)
         
-            return JsonResponse(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     #대여신청 내역 수락 클릭시
     def put(self, request, item_id):
@@ -72,9 +70,9 @@ class ContractView(APIView):
             contract.status = status_str
             contract.save()
             
-            return JsonResponse({"msg": "계약 수정 완료", "status": contract.status, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
+            return Response({"msg": "계약 수정 완료", "status": contract.status, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
         except:
-            return JsonResponse({"msg": "계약 수정 실패"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"msg": "계약 수정 실패"}, status=status.HTTP_400_BAD_REQUEST)
         
         
     #대여신청 거절 클릭시
@@ -87,7 +85,7 @@ class ContractView(APIView):
             contract = ContractModel.objects.get(item=item, user=current_chat_room.inquirer)
             contract.delete()
             
-            return JsonResponse({"msg": "대여 신청 거절완료", "status" : None, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
+            return Response({"msg": "대여 신청 거절완료", "status" : None, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
         except ContractModel.DoesNotExist:
-            return JsonResponse({"msg": "계약이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"msg": "계약이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
         

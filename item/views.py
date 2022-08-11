@@ -221,6 +221,24 @@ class ItemPostView(APIView):
         # 아이템 모델 벨리데이션 불합격
         else:
             return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def put(self, request, item_id):
+        user = request.user
+        status_ = request.data.get('status')
+        
+        try:
+            item = ItemModel.objects.get(id=item_id, user=user)
+            
+            if item.status == "대여 가능":
+                return Response({"msg": "이미 재등록한 물품입니다."})
+            
+            item.status = status_
+            item.save()
+            
+            return Response({"msg": "물품이 재등록 되었습니다."}, status=status.HTTP_200_OK)
+        except ItemModel.DoesNotExist:
+            return Response({"msg": "물품이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+        
 
 
 # 물품 수정 페이지
@@ -318,7 +336,8 @@ class ReviewView(APIView):
         # 리뷰 평점 유저 스코어에 반영
         # 리뷰 평점/평균 평점을 가져온 후 다시 평균 계산해서 저장
         item.user.score = int(item.user.score or 0) #유저 스코어가 null일 경우에 0으로 반환
-        item.user.score = ((item.user.score * item.user.get_reviews_count) + rating) / (item.user.get_reviews_count + 1)
+        item.user.get_reviews_count = int(item.user.get_reviews_count or 0) 
+        item.user.score = ((item.user.score * item.user.get_reviews_count) + (int(rating) * 20)) / (item.user.get_reviews_count + 1)
         item.user.get_reviews_count += 1
         item.user.save()
 
