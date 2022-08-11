@@ -4,7 +4,6 @@ from chat.models import (
     ChatMessage as ChatMessageModel
 )
 from contract.models import Contract as ContractModel
-from django.db.models import Q
 import locale
 
 locale.setlocale(locale.LC_TIME, 'ko_KR')
@@ -30,6 +29,7 @@ class ChatMessageSerializer(serializers.ModelSerializer):
 class ChatSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
     inquirer = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
     
     def get_author(self, obj):
         try:
@@ -47,9 +47,16 @@ class ChatSerializer(serializers.ModelSerializer):
         except:
             return {"nickname": "탈퇴유저"}
 
+    def get_created_at(self, obj):
+        try:
+            latest_chat_messages = ChatMessageModel.objects.filter(room=obj).order_by('-id').first()
+            return latest_chat_messages.created_at
+        except:
+            return 
+
     class Meta:
         model = ChatRoomModel
-        fields = ['id', 'inquirer', 'author']
+        fields = ['id', 'inquirer', 'author', 'created_at']
         
         
 class ChatRoomSerializer(serializers.ModelSerializer):
@@ -81,14 +88,13 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             return '삭제됨'
     
     def get_contract_status(self, obj):
-        inquirer = obj.inquirer
-        item = obj.item
-        try:
-            if item and inquirer:
-                contract = ContractModel.objects.get(item=item.id, user=inquirer.id)
-                return contract.status
-        except ContractModel.DoesNotExist:
+        contract = obj.contract
+
+        if contract:    
+            return contract.status
+        else:
             return
+        
 
     def get_is_reviewed(self, obj):
         try:

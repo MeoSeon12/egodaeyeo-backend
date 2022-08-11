@@ -78,7 +78,7 @@ class MyPageItemSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ItemModel
-        fields = ["id", "section", "image", "title", "status"]
+        fields = ["id", "user", "section", "image", "title", "status"]
 
 
 # Contract 모델 직렬화

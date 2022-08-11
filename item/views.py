@@ -230,7 +230,7 @@ class ItemPostView(APIView):
             item = ItemModel.objects.get(id=item_id, user=user)
             
             if item.status == "대여 가능":
-                return Response({"msg": "이미 재등록한 물품입니다."})
+                return Response({"msg": "이미 재등록한 물품입니다."}, status=status.HTTP_208_ALREADY_REPORTED)
             
             item.status = status_
             item.save()
