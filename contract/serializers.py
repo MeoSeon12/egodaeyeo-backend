@@ -1,4 +1,3 @@
-from winreg import QueryValue
 from rest_framework import serializers
 from item.serializers import MyPageItemSerializer
 from contract.models import Contract as ContractModel
