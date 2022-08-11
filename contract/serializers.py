@@ -4,7 +4,6 @@ from contract.models import Contract as ContractModel
 from chat.models import ChatRoom as ChatRoomModel
 from datetime import datetime
 
-
 class ContractSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):

@@ -8,8 +8,7 @@ from chat.models import ChatMessage, ChatRoom
 from user.models import User
 from django.db.models import Q
 
-locale.setlocale(locale.LC_TIME, 'ko_KR')
-
+locale.setlocale(locale.LC_ALL, 'ko_KR.UTF-8')
 
 # 채팅 컨슈머
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -60,8 +59,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         self_user = sender
 
+        am_pm = datetime.now().strftime('%p')            
+        now_time = datetime.now().strftime('%I:%M')            
         now_date = datetime.now().strftime('%Y년 %m월 %d일 %A')
-        now_time = datetime.now().strftime('%p %I:%M')
+        if am_pm == 'AM':
+            now_time = f"오전 {now_time}"
+        else:
+            now_time = f"오후 {now_time}"
 
         response = {
             'message': message,
