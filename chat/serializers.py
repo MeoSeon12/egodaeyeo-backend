@@ -3,22 +3,27 @@ from chat.models import (
     ChatRoom as ChatRoomModel,
     ChatMessage as ChatMessageModel
 )
-from contract.models import Contract as ContractModel
 import locale
 
-locale.setlocale(locale.LC_TIME, 'ko_KR')
-
+# locale.setlocale(locale.LC_TIME, 'kor')
+# locale.setlocale(locale.LC_TIME, 'ko_KR.UTF-8')
+locale.setlocale(locale.LC_ALL, 'ko_KR.UTF-8')
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     time = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
 
     def get_time(self, obj):
-        return obj.created_at.strftime('%p %I:%M')
+        am_pm = obj.created_at.strftime('%p')            
+        created_time = obj.created_at.strftime('%I:%M')            
+        if am_pm == 'AM':
+            created_time = f"오전 {created_time}"
+        else:
+            created_time = f"오후 {created_time}"
+        return created_time
     
     def get_date(self, obj):
         return obj.created_at.strftime('%Y년 %m월 %d일 %A')
-
 
     class Meta:
         model = ChatMessageModel
