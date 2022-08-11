@@ -5,8 +5,6 @@ from chat.models import (
 )
 import locale
 
-# locale.setlocale(locale.LC_TIME, 'kor')
-# locale.setlocale(locale.LC_TIME, 'ko_KR.UTF-8')
 locale.setlocale(locale.LC_ALL, 'ko_KR.UTF-8')
 
 class ChatMessageSerializer(serializers.ModelSerializer):
