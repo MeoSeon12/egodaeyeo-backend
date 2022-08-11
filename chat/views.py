@@ -1,5 +1,3 @@
-from datetime import timedelta
-from multiprocessing import context
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -25,10 +23,10 @@ class ChatView(APIView):
         user = request.user
         my_chat_rooms = ChatRoomModel.objects.filter(
             Q(inquirer=user.id) | Q(author=user.id))
-
         my_chat_rooms_serializer = ChatSerializer(my_chat_rooms, many=True)
-
-        return Response(my_chat_rooms_serializer.data, status=status.HTTP_200_OK)
+        sorted_rooms = sorted(
+            my_chat_rooms_serializer.data, key=lambda x: (x['created_at'] is not None, x['created_at']), reverse=True)
+        return Response(sorted_rooms, status=status.HTTP_200_OK)
 
     # 채팅방 생성
     def post(self, request, item_id):
@@ -86,9 +84,10 @@ class ChatRoomView(APIView):
         try:
             chat_room = ChatRoomModel.objects.get(id=room_id)
             chat_room_serializer = ChatRoomSerializer(chat_room)
-            
-            #채팅방 접속시, 채팅읽음 상태 만드는 로직
-            other_chats = ChatMessageModel.objects.filter(~Q(user=user.id) & Q(room=chat_room))
+
+            # 채팅방 접속시, 채팅읽음 상태 만드는 로직
+            other_chats = ChatMessageModel.objects.filter(
+                ~Q(user=user.id) & Q(room=chat_room))
             for other_chat in other_chats:
                 other_chat.is_read = True
                 other_chat.save()
