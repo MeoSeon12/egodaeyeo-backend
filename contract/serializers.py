@@ -16,9 +16,11 @@ class ContractSerializer(serializers.ModelSerializer):
             "item": contract.item,
         }
         
-        chat_room = ChatRoomModel.objects.get(**query_data)
-        chat_room.contract = contract
-        chat_room.save()
+        chat_rooms = ChatRoomModel.objects.filter(**query_data)
+        for chat_room in chat_rooms:
+            if not chat_room.contract:
+                chat_room.contract = contract
+                chat_room.save()
         
         return contract
 
@@ -31,6 +33,7 @@ class MyPageContractSerializer(serializers.ModelSerializer):
     time_remaining = serializers.SerializerMethodField()
     rental_date = serializers.SerializerMethodField()
     room_id = serializers.SerializerMethodField()
+    is_reviewed = serializers.SerializerMethodField()
 
     # 대여 종료일까지 시간
     def get_time_remaining(self, obj):
@@ -72,7 +75,17 @@ class MyPageContractSerializer(serializers.ModelSerializer):
             return chat_room_id
         except:
             return 
+        
+    #리뷰 작성 여부
+    def get_is_reviewed(self, obj):
+        try:
+            reviews = obj.item.review_set.values()
+            review_authors = [review['user_id'] for review in reviews]
+            
+            return obj.user.id in review_authors
+        except:
+            return
 
     class Meta:
         model = ContractModel
-        fields = ["id", "rental_date", "time_remaining", "item", "room_id"]
+        fields = ["id", "rental_date", "time_remaining", "item", "room_id", "is_reviewed"]

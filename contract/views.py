@@ -7,6 +7,7 @@ from item.models import Item as ItemModel
 from contract.models import Contract as ContractModel
 from .serializers import ContractSerializer
 from chat.models import ChatRoom as ChatRoomModel
+from django.db.models import Q
 
 
 class ContractView(APIView):
@@ -18,9 +19,8 @@ class ContractView(APIView):
         chatroom = ChatRoomModel.objects.get(id=room_id)
         
         item = ItemModel.objects.get(id=item_id)
-        contract = ContractModel.objects.get(item=item, user=chatroom.inquirer)
+        contract = ContractModel.objects.get(Q(item=item) & Q(user=chatroom.inquirer) & ~Q(status="대여 종료"))
         contract_serializer = ContractSerializer(contract)
-        
         return Response(contract_serializer.data, status=status.HTTP_200_OK)
 
     # 대여신청 버튼 클릭시
@@ -30,12 +30,37 @@ class ContractView(APIView):
         end_date = request.data.get("endTime")
         item = ItemModel.objects.get(id=item_id)
         
-        try:
-            contract = ContractModel.objects.get(item=item, user=user_id)
-            if contract:
-                return Response({"msg": "이미 대여신청한 물품입니다."})
+        contracts_status = ContractModel.objects.filter(item=item, user=user_id).values('status')
+        
+        if contracts_status.exists():
+            #조회된 contract가 있는 경우 종료된 contract인지 진행되고 있는 contract인지 판단
+            #진행되고 있지 않고 종료된 contract만 있다면, contract생성 (빌렸던 사람이 다시 빌리기 위한 로직)
             
-        except ContractModel.DoesNotExist:
+            not_available_status_list = ['대여 중', '검토 중']
+            contract_status_list = [contract_status['status'] for contract_status in contracts_status]
+            
+            for not_available_status in not_available_status_list:
+                if not_available_status in contract_status_list:
+                    return Response({"msg": "이미 신청한 물품입니다."}, status=status.HTTP_208_ALREADY_REPORTED)
+                else:
+                    continue
+            
+            contract_data = {
+                "user": user_id,
+                "item": item.id,
+                "start_date": start_date,
+                "end_date": end_date,
+                "status": '검토 중'
+            }
+            contract_serializer = ContractSerializer(data=contract_data, context={"request": request})
+        
+            if contract_serializer.is_valid():
+                contract_serializer.save()
+                return Response(contract_serializer.data, status=status.HTTP_200_OK)
+            return Response(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        else:
+            #조회된 contract가 하나도 없는 경우 새로 생성
             contract_data = {
                 "user": user_id,
                 "item": item.id,
@@ -66,7 +91,7 @@ class ContractView(APIView):
             
             #계약 status 변경 
             current_chat_room = ChatRoomModel.objects.get(item=item_id, id=room_id)
-            contract = ContractModel.objects.get(item=item, user=current_chat_room.inquirer)
+            contract = ContractModel.objects.get(Q(item=item) & Q(user=current_chat_room.inquirer) & ~Q(status="대여 종료"))
             contract.status = status_str
             contract.save()
             
@@ -82,7 +107,7 @@ class ContractView(APIView):
         try:
             item = ItemModel.objects.get(id=item_id, user=user_id)
             current_chat_room = ChatRoomModel.objects.get(item=item_id, id=room_id)
-            contract = ContractModel.objects.get(item=item, user=current_chat_room.inquirer)
+            contract = ContractModel.objects.get(Q(item=item) & Q(user=current_chat_room.inquirer) & ~Q(status="대여 종료"))
             contract.delete()
             
             return Response({"msg": "대여 신청 거절완료", "status" : None, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)

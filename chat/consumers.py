@@ -8,7 +8,7 @@ from chat.models import ChatMessage, ChatRoom
 from user.models import User
 from django.db.models import Q
 
-locale.setlocale(locale.LC_ALL, 'ko_KR.UTF-8')
+locale.setlocale(locale.LC_TIME, 'ko_KR.UTF-8')
 
 # 채팅 컨슈머
 class ChatConsumer(AsyncWebsocketConsumer):
