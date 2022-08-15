@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ItemListView, DetailView, ReviewView, ContractView, ItemPostView, ItemUpdateView
+from .views import ItemListView, DetailView, ReviewView, ItemPostView, ItemUpdateView
 
 
 urlpatterns = [
@@ -9,6 +9,4 @@ urlpatterns = [
     path('update/<int:item_id>', ItemUpdateView.as_view()),
     path('reupload/<int:item_id>', ItemPostView.as_view()),
     path('reviews/<int:item_id>', ReviewView.as_view()),
-    path('contracts/start/<int:item_id>', ContractView.as_view()),
-    path('contracts/end/<int:item_id>', ContractView.as_view()),
 ]

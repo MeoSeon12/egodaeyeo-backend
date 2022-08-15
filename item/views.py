@@ -355,30 +355,3 @@ class ReviewView(APIView):
             return Response(review_serializer.data, status=status.HTTP_200_OK)
     
         return Response(review_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ContractView(APIView):
-    permission_classes = [IsAddressOrReadOnly]
-    authentication_classes = [JWTAuthentication]
-
-    # 대여 신청 버튼 클릭시
-    def post(self, request, item_id):
-        user_id = request.user.id
-        start_date = request.data.get("rentalStartTime")
-        end_date = request.data.get("rentalEndTime")
-        item = ItemModel.objects.get(id=item_id)
-
-        contract_data = {
-            "user": user_id,
-            "item": item.id,
-            "start_date": start_date,
-            "end_date": end_date
-        }
-
-        contract_serializer = ContractSerializer(data=contract_data, context={"request": request})
-    
-        if contract_serializer.is_valid():
-            contract_serializer.save()
-            return Response(contract_serializer.data, status=status.HTTP_200_OK)
-    
-        return Response(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
