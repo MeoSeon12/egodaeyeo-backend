@@ -7,7 +7,6 @@ from user.models import User as UserModel
 from item.models import (
     Item as ItemModel,
     Bookmark as BookmarkModel,
-    Review as ReviewModel
 )
 from item.serializers import MyPageItemSerializer
 from contract.models import Contract as ContractModel
@@ -87,7 +86,7 @@ class UserView(APIView):
             if user_serializer.is_valid():
                 user_serializer.save()
                 return Response(user_serializer.data, status=status.HTTP_200_OK)
-        except:
+        except SocialAccount.DoesNotExist:
             user_serializer = UserSerializer(user, data=data, partial=True, context={"request": request})    
             if user_serializer.is_valid():
                 user_serializer.save()

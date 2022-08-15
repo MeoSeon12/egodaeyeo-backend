@@ -16,12 +16,16 @@ class Contract(models.Model):
         return f"[대여] {self.id} / {self.user.nickname} / {self.item.title}"
 
 
-class ContractHistory(models.Model):
-    user = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True)
-    contract = models.ForeignKey(Contract, on_delete=models.SET_NULL, null=True)
+class Review(models.Model):
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    item = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
+    contract = models.OneToOneField(Contract, on_delete=models.SET_NULL, null=True)
+    content = models.TextField("내용", max_length=300)
+    star = models.DecimalField("별점", decimal_places=1, max_digits=2)
+    created_at = models.DateTimeField("작성일", auto_now_add=True)
 
     class Meta:
-        db_table = "contract_histories"
+        db_table = "reviews"
         
     def __str__(self):
-        return f": [대여내역] 유저: {self.id} / {self.user.nickname} / 상대: {self.contract.user.nickname} / {self.contract}"
+        return f"[리뷰] {self.id} / {self.user.nickname} / {self.item}"

@@ -39,7 +39,7 @@ class ChatSerializer(serializers.ModelSerializer):
             nickname = obj.author.nickname
             id = obj.author.id
             return {"id": id, "nickname": nickname}
-        except:
+        except AttributeError:
             return {"nickname": "탈퇴유저"}
 
     def get_inquirer(self, obj):
@@ -47,14 +47,14 @@ class ChatSerializer(serializers.ModelSerializer):
             nickname = obj.inquirer.nickname
             id = obj.inquirer.id
             return {"id": id, "nickname": nickname}
-        except:
+        except AttributeError:
             return {"nickname": "탈퇴유저"}
 
     def get_created_at(self, obj):
         try:
             latest_chat_messages = ChatMessageModel.objects.filter(room=obj).order_by('-id').first()
             return latest_chat_messages.created_at
-        except:
+        except AttributeError:
             return 
 
     class Meta:
@@ -75,19 +75,19 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     def get_title(self, obj):
         try:
             return obj.item.title
-        except:
+        except AttributeError:
             return '삭제된 물품입니다'
 
     def get_item(self, obj):
         try:
             return obj.item.id
-        except:
+        except AttributeError:
             return
     
     def get_item_status(self, obj):
         try:
             return obj.item.status
-        except:
+        except AttributeError:
             return '삭제됨'
     
     def get_contract_status(self, obj):
@@ -105,7 +105,8 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             review_authors = [review['user_id'] for review in reviews]
             
             return obj.inquirer.id in review_authors
-        except:
+        except AttributeError:
+            #채팅방의 아이템이 삭제되었을때
             return
 
     def get_author(self, obj):
@@ -113,7 +114,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             nickname = obj.author.nickname
             id = obj.author.id
             return {"id": id, "nickname": nickname}
-        except:
+        except AttributeError:
             return {"nickname": "탈퇴유저"}
 
     def get_inquirer(self, obj):
@@ -121,7 +122,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             nickname = obj.inquirer.nickname
             id = obj.inquirer.id
             return {"id": id, "nickname": nickname}
-        except:
+        except AttributeError:
             return {"nickname": "탈퇴유저"}
 
 
