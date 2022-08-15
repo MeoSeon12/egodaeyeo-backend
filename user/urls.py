@@ -2,7 +2,6 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView # JWT refresh 토큰 발급 view 인증토큰을 재발급받기위한 또 다른 토큰 
 from user.views import (
     KakaoLoginView,
-    TokenRefreshView,
     EgoTokenObtainPairView,
     UserView,
     MyPageView
