@@ -15,7 +15,7 @@ from contract.serializers import MyPageContractSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from allauth.socialaccount.models import SocialAccount
 from user.jwt_claim_serializer import EgoTokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
 from django.contrib.auth.hashers import check_password
