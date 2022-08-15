@@ -333,7 +333,7 @@ class ReviewView(APIView):
         rating = request.data.get("rating")
         item = ItemModel.objects.get(id=item_id)
         contract = ContractModel.objects.filter(item=item.id, user=user_id).last()
-        print(contract.id, "아이디컨트렉")
+
         # 리뷰 평점 유저 스코어에 반영
         # 리뷰 평점/평균 평점을 가져온 후 다시 평균 계산해서 저장
         item.user.score = int(item.user.score or 0) #유저 스코어가 null일 경우에 0으로 반환

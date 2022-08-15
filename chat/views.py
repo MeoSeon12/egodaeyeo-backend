@@ -53,7 +53,6 @@ class ChatView(APIView):
         #그렇지 않을 경우 채팅방을 새롭게 생성하는 로직
         for not_available_status in not_available_status_list:
             if not_available_status in chat_room_contract_status_list:
-                print(chat_room.id)
                 chat_room = {
                 'status': '채팅방 조회됨',
                 'id': chat_room.id,
