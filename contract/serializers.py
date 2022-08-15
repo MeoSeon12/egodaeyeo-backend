@@ -71,7 +71,7 @@ class MyPageContractSerializer(serializers.ModelSerializer):
     #방id
     def get_room_id(self, obj):
         try:
-            chat_room_id = obj.item.chatroom_set.get(inquirer=obj.user).id
+            chat_room_id = obj.item.chatroom_set.filter(inquirer=obj.user).last().id
             return chat_room_id
         except AttributeError:
             return 

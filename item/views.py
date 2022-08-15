@@ -44,7 +44,7 @@ class ItemListView(APIView, PaginationHandlerMixin):
             ward_county = user.address.split()[1]
             address_query = Q(user__address__contains=city) & Q(user__address__contains=ward_county)
             items = items.filter(address_query)
-        except UserModel.DoesNotExist:
+        except ValueError:
             pass
         
         # 검색 입력값 Query Parameter로 가져오기
