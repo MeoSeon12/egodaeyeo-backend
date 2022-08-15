@@ -73,7 +73,7 @@ class MyPageContractSerializer(serializers.ModelSerializer):
         try:
             chat_room_id = obj.item.chatroom_set.get(inquirer=obj.user).id
             return chat_room_id
-        except:
+        except AttributeError:
             return 
         
     #리뷰 작성 여부
@@ -83,7 +83,7 @@ class MyPageContractSerializer(serializers.ModelSerializer):
             review_authors = [review['user_id'] for review in reviews]
             
             return obj.user.id in review_authors
-        except:
+        except AttributeError:
             return
 
     class Meta:

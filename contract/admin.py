@@ -1,9 +1,9 @@
 from django.contrib import admin
 from .models import (
     Contract as ContractModel,
-    ContractHistory as ContractHistoryModel,
+    Review as ReviewModel,
 )
 
 
 admin.site.register(ContractModel)
-admin.site.register(ContractHistoryModel)
+admin.site.register(ReviewModel)

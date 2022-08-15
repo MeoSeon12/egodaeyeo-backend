@@ -1,11 +1,9 @@
 from rest_framework import serializers
 from datetime import datetime
-from contract.models import Contract as ContractModel
-from chat.models import ChatRoom as ChatRoomModel
+from contract.models import Contract as ContractModel, Review as ReviewModel
 from item.models import (
     Item as ItemModel,
     Category as CategoryModel,
-    Review as ReviewModel,
     Bookmark as BookmarkModel,
     ItemImage as ItemImageModel,
 )
@@ -54,7 +52,7 @@ class ItemSerializer(serializers.ModelSerializer):
         try:
             main_image = obj.itemimage_set.first().image.url
             return main_image
-        except:
+        except AttributeError:
             return None
         
     class Meta:
@@ -73,7 +71,7 @@ class MyPageItemSerializer(serializers.ModelSerializer):
         try:
             main_image = obj.itemimage_set.first().image.url
             return main_image
-        except:
+        except AttributeError:
             return None
     
     class Meta:
@@ -91,7 +89,6 @@ class ContractSerializer(serializers.ModelSerializer):
 
 # 리뷰 모델 직렬화 (물품 상세 페이지)
 class DetailReviewSerializer(serializers.ModelSerializer):
-
     image = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
     period = serializers.SerializerMethodField()
@@ -106,7 +103,7 @@ class DetailReviewSerializer(serializers.ModelSerializer):
         return nickname
 
     def get_period(self, obj):
-        contract = ContractModel.objects.get(item=obj.item, user=obj.user)
+        contract = obj.contract
         period = str(contract.end_date - contract.start_date)
         
         # 대여 기간 계산
@@ -143,7 +140,7 @@ class DetailReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReviewModel
-        fields = ["image", "user", "item", "nickname", "content", "created_at", "star", "period"]
+        fields = ["image", "user", "item", "contract", "nickname", "content", "created_at", "star", "period"]
 
     extra_kwargs = {
             'star' : {'write_only': True}
@@ -236,7 +233,7 @@ class DetailSerializer(serializers.ModelSerializer):
             BookmarkModel.objects.get(item=obj.id, user=self.context['login_id'])
             return True
         # 찜하지 않았을 시
-        except:
+        except BookmarkModel.DoesNotExist:
             return False
 
     def get_bookmark_length(self, obj):

@@ -96,8 +96,8 @@ class ContractView(APIView):
             contract.save()
             
             return Response({"msg": "계약 수정 완료", "status": contract.status, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
-        except:
-            return Response({"msg": "계약 수정 실패"}, status=status.HTTP_400_BAD_REQUEST)
+        except ItemModel.DoesNotExist:
+            return Response({"msg": "아이템이 더이상 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
         
         
     #대여신청 거절 클릭시

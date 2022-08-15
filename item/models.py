@@ -63,17 +63,3 @@ class Bookmark(models.Model):
         
     def __str__(self):
         return f"[북마크] {self.id} / {self.user.nickname} / {self.item} 북마크"
-
-
-class Review(models.Model):
-    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    content = models.TextField("내용", max_length=300)
-    star = models.DecimalField("별점", decimal_places=1, max_digits=2)
-    created_at = models.DateTimeField("작성일", auto_now_add=True)
-
-    class Meta:
-        db_table = "reviews"
-        
-    def __str__(self):
-        return f"[리뷰] {self.id} / {self.user.nickname} / {self.item}"
