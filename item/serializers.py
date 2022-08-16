@@ -14,7 +14,8 @@ class ItemPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ItemModel
-        fields = "__all__"
+        fields = ["id", "section", "title", "content", "time_unit", "price", 
+                  "user", "category", "created_at", "updated_at", "status"]
 
 
 # 아이템 이미지 모델 직렬화
@@ -22,7 +23,7 @@ class ItemImageSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ItemImageModel
-        fields = "__all__"
+        fields = ["id", "item", "image"]
 
 
 # 카테고리 모델 직렬화

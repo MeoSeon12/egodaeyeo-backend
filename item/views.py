@@ -35,6 +35,7 @@ class ItemListView(APIView, PaginationHandlerMixin):
         categories = CategoryModel.objects.all()
         
         #유저가 주소를 설정 했을때 Query
+        #로그인한 유저가 존재할때만 실행되는 코드
         try:
             user = UserModel.objects.get(id=user_id)
             address_split = user.address.split()[:2]
@@ -45,6 +46,7 @@ class ItemListView(APIView, PaginationHandlerMixin):
             address_query = Q(user__address__contains=city) & Q(user__address__contains=ward_county)
             items = items.filter(address_query)
         except ValueError:
+            #except에서 pass는 비로그인 유저도 다음 코드를 실행하기 위함
             pass
         
         # 검색 입력값 Query Parameter로 가져오기
@@ -57,7 +59,6 @@ class ItemListView(APIView, PaginationHandlerMixin):
         if search_value != "":
             search_query = Q(title__icontains=search_value)
             items = items.filter(search_query)
-            
             
         if category_name != "":
             category_query = Q(category__name=category_name)
@@ -113,16 +114,6 @@ class DetailView(APIView):
         try:
             # 북마크 모델 존재 여부 체크
             bookmark_model_check = BookmarkModel.objects.get(user=user_id, item=item_id)
-            # 북마크 모델 있을시 삭제
-            bookmark_model_check.delete()
-            # 로그인 유저 북마크 여부
-            is_bookmark = False
-            # 북마크 갯수 카운터
-            bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
-
-            return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_200_OK)
-
-
         # 북마크 모델 없을시 저장
         except BookmarkModel.DoesNotExist:
             new_bookmark = {
@@ -134,7 +125,17 @@ class DetailView(APIView):
             is_bookmark = True
             # 북마크 갯수 갱신
             bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
+            
             return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_201_CREATED)
+        
+        # 북마크 모델 있을시 삭제
+        bookmark_model_check.delete()
+        # 로그인 유저 북마크 여부
+        is_bookmark = False
+        # 북마크 갯수 카운터
+        bookmark_length = BookmarkModel.objects.filter(item=item_id).count()
+
+        return Response({'is_bookmark': is_bookmark, 'bookmark_length': bookmark_length}, status=status.HTTP_200_OK)
 
     # 게시글 삭제
     def delete(self, request, item_id):
@@ -220,24 +221,24 @@ class ItemPostView(APIView):
         # 아이템 모델 벨리데이션 불합격
         else:
             return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+    
+    #물품 재등록
     def put(self, request, item_id):
         user = request.user
         status_ = request.data.get('status')
         
         try:
             item = ItemModel.objects.get(id=item_id, user=user)
-            
-            if item.status == "대여 가능":
-                return Response({"msg": "이미 재등록한 물품입니다."}, status=status.HTTP_208_ALREADY_REPORTED)
-            
-            item.status = status_
-            item.save()
-            
-            return Response({"msg": "물품이 재등록 되었습니다."}, status=status.HTTP_200_OK)
         except ItemModel.DoesNotExist:
             return Response({"msg": "물품이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
         
+        if item.status == "대여 가능":
+            return Response({"msg": "이미 재등록한 물품입니다."}, status=status.HTTP_208_ALREADY_REPORTED)
+        
+        item.status = status_
+        item.save()
+        
+        return Response({"msg": "물품이 재등록 되었습니다."}, status=status.HTTP_200_OK)
 
 
 # 물품 수정 페이지

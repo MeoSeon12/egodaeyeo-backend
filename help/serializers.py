@@ -7,9 +7,9 @@ from .models import (
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = FeedbackModel
-        fields = "__all__"
+        fields = ["id", "user", "title", "content"]
         
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReportModel
-        fields = "__all__"
+        fields = ["id", "user", "item", "category", "content"]

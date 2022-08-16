@@ -81,23 +81,25 @@ class ContractView(APIView):
     def put(self, request, item_id):
         user_id = request.user.id
         room_id = request.GET.get('room_id', "")
-        status_str = request.data.get('status')
+        status_ = request.data.get('status')
 
         try:
-            #아이템 status 변경
             item = ItemModel.objects.get(id=item_id, user=user_id)
-            item.status = status_str
-            item.save()
-            
-            #계약 status 변경 
             current_chat_room = ChatRoomModel.objects.get(item=item_id, id=room_id)
             contract = ContractModel.objects.get(Q(item=item) & Q(user=current_chat_room.inquirer) & ~Q(status="대여 종료"))
-            contract.status = status_str
-            contract.save()
-            
-            return Response({"msg": "계약 수정 완료", "status": contract.status, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
         except ItemModel.DoesNotExist:
             return Response({"msg": "아이템이 더이상 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        #아이템 status 변경
+        item.status = status_
+        item.save()
+        
+        #계약 status 변경 
+        contract.status = status_
+        contract.save()
+        
+        return Response({"msg": "계약 수정 완료", "status": contract.status, "room_id": current_chat_room.id}, status=status.HTTP_200_OK)
         
         
     #대여신청 거절 클릭시
