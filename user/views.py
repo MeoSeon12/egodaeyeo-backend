@@ -56,41 +56,41 @@ class UserView(APIView):
         user_id = request.user.id
         user = UserModel.objects.get(id=user_id)
         data = request.data
+        image = request.data['image']
+        password = request.data['password']
+        current_pw = request.data['current_password']
             
         try:
-            image = request.data['image']
-            password = request.data['password']
-            current_pw = request.data['current_password']
             social_user = SocialAccount.objects.filter(user=user).first()
 
-            
             if social_user and password != "":
                 return Response({"social_error": "소셜회원은 비밀번호를 수정 하실 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
             
-            if current_pw:
-                #현재 비밀번호와 입력한 현재비밀번호가 일치하지 않을시 return
-                if check_password(current_pw, user.password) == False:
-                    return Response({"msg": "입력하신 현재 비밀번호가 일치하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
-            
-            #image 수정안할시 예외처리
-            if image == 'undefined':
-                data = data.copy()
-                data.pop('image')
-                
-            #password Blank일시 예외처리
-            if password == "":
-                data = data.copy()
-                data.pop('password')
-                
-            user_serializer = UserSerializer(user, data=data, partial=True, context={"request": request})    
-            if user_serializer.is_valid():
-                user_serializer.save()
-                return Response(user_serializer.data, status=status.HTTP_200_OK)
         except SocialAccount.DoesNotExist:
             user_serializer = UserSerializer(user, data=data, partial=True, context={"request": request})    
             if user_serializer.is_valid():
                 user_serializer.save()
                 return Response(user_serializer.data, status=status.HTTP_200_OK)
+
+        if current_pw:
+            #현재 비밀번호와 입력한 현재비밀번호가 일치하지 않을시 return
+            if check_password(current_pw, user.password) == False:
+                return Response({"msg": "입력하신 현재 비밀번호가 일치하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        #image 수정안할시 예외처리
+        if image == 'undefined':
+            data = data.copy()
+            data.pop('image')
+            
+        #password Blank일시 예외처리
+        if password == "":
+            data = data.copy()
+            data.pop('password')
+            
+        user_serializer = UserSerializer(user, data=data, partial=True, context={"request": request})    
+        if user_serializer.is_valid():
+            user_serializer.save()
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
         
         return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -164,17 +164,17 @@ class MyPageView(APIView):
             ongoing_contract_serializer = MyPageContractSerializer(my_ongoing_contracts, many=True)
             return Response(ongoing_contract_serializer.data, status=status.HTTP_200_OK)
 
-        if tab == "closed":
+        elif tab == "closed":
             my_closed_contracts = ContractModel.objects.filter((Q(status='대여 종료') & Q(user=user.id)) | (Q(status='대여 종료') & Q(item__user=user_id))).order_by('-id')
             closed_contract_serializer = MyPageContractSerializer(my_closed_contracts, many=True)
             return Response(closed_contract_serializer.data, status=status.HTTP_200_OK)
 
-        if tab == "bookmarks":
+        elif tab == "bookmarks":
             my_bookmarks = BookmarkModel.objects.filter(user=user.id).order_by('-id')
             my_bookmarks_serializer = MyBookmarkSerializer(my_bookmarks, many=True)
             return Response(my_bookmarks_serializer.data, status=status.HTTP_200_OK)
 
-        if tab == "myitems":
+        elif tab == "myitems":
             my_items = ItemModel.objects.filter(user=user.id).order_by('-id')
             my_items_serialiizer = MyPageItemSerializer(my_items, many=True)
             data_list = []

@@ -98,18 +98,18 @@ class ChatRoomView(APIView):
 
         try:
             chat_room = ChatRoomModel.objects.get(id=room_id)
-            chat_room_serializer = ChatRoomSerializer(chat_room)
-
-            # 채팅방 접속시, 채팅읽음 상태 만드는 로직
-            other_chats = ChatMessageModel.objects.filter(
-                ~Q(user=user.id) & Q(room=chat_room))
-            for other_chat in other_chats:
-                other_chat.is_read = True
-                other_chat.save()
-            return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
-
         except ChatRoomModel.DoesNotExist:
             return Response({"msg": "채팅방이 더이상 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+        
+        chat_room_serializer = ChatRoomSerializer(chat_room)
+
+        # 채팅방 접속시, 채팅읽음 상태 만드는 로직
+        other_chats = ChatMessageModel.objects.filter(
+            ~Q(user=user.id) & Q(room=chat_room))
+        for other_chat in other_chats:
+            other_chat.is_read = True
+            other_chat.save()
+        return Response(chat_room_serializer.data, status=status.HTTP_200_OK)
 
     # 실시간으로 바로 읽은 메시지 읽음 처리
     def put(self, request, room_id):
