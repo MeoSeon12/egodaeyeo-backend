@@ -235,6 +235,8 @@ class DetailSerializer(serializers.ModelSerializer):
         # 찜하지 않았을 시
         except BookmarkModel.DoesNotExist:
             return False
+        except ValueError:
+            return False
 
     def get_bookmark_length(self, obj):
         bookmarks = obj.bookmark_set
