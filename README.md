@@ -62,4 +62,4 @@
 <br><br><br>
 
 ## 📢 발표 영상
-<a href="">YouTube 바로가기</a>
+<a href="https://www.youtube.com/watch?v=hXkQHUCjkWM&ab_channel=%EB%A1%9C%EC%8A%88">YouTube 바로가기</a>
