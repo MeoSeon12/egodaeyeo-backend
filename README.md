@@ -49,13 +49,11 @@
 <a href="https://quixotic-wok-871.notion.site/S-A-3183ff7202e942099238af3effd956ea">노션 바로가기</a>
 <br><br>
 ## 🔨 개발 목업
-<a href="https://www.figma.com/file/cPz3rZf7v9BuIOhLHsL1En/%EC%9D%B4%EA%B1%B0%EB%8C%80%EC%97%AC.-%EB%AA%A9%EC%97%85?node-id=0%3A1">목업 figma 바로가기</a>
 <br><br>
 ![image](https://user-images.githubusercontent.com/104349901/177922961-e16b4030-ba7a-4a69-be7f-76509f629abf.png)
 <br><br>
 
 ## ⚙ DB 설계 ERD
-<!-- <a href="https://docs.google.com/spreadsheets/d/1ZLFdnhCmHF1gWQ0VjzHNtW1nglS0MMpMtOdWKkzBeQo/edit?usp=sharing">구글 시트 바로가기</a>   -->
 <br>
 <img src="https://user-images.githubusercontent.com/104349901/185032482-c6b7c6c8-a164-4b71-8318-ba74ef12a1d5.png">
 <br>
