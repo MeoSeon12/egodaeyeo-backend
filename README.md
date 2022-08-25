@@ -205,12 +205,17 @@ async function onAddressEnter() {
   
 <br>
 
-## 8. DB 설계 ERD
+## 8. API 명세서
+<a href="https://documenter.getpostman.com/view/20826963/VUqymsv9#intro">포스트맨 DOCS</a>
+
+<br>
+
+## 9. DB 설계 ERD
 https://www.erdcloud.com/d/zfZo5E3pKdEorSGBX
 <img src="https://user-images.githubusercontent.com/104349901/185032482-c6b7c6c8-a164-4b71-8318-ba74ef12a1d5.png">
 
 <br>
 
-## 9. 발표 영상 및 PPT
+## 10. 발표 영상 및 PPT
 <a href="https://www.youtube.com/watch?v=hXkQHUCjkWM&ab_channel=%EB%A1%9C%EC%8A%88" target="blank" rel="noreferrer noopener">YouTube 바로가기</a><br>
 <a href="https://docs.google.com/presentation/d/151z1B6_qrS7OdPhJJKruioRGog89LuFyoj5gdUyjYIM/edit?usp=sharing">구글 슬라이드 바로가기</a>
