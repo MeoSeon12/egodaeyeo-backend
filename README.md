@@ -206,7 +206,7 @@ async function onAddressEnter() {
 <br>
 
 ## 8. DB 설계 ERD
-
+https://www.erdcloud.com/d/zfZo5E3pKdEorSGBX
 <img src="https://user-images.githubusercontent.com/104349901/185032482-c6b7c6c8-a164-4b71-8318-ba74ef12a1d5.png">
 
 <br>
