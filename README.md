@@ -206,7 +206,7 @@ async function onAddressEnter() {
 <br>
 
 ## 8. API 명세서
-<a href="https://documenter.getpostman.com/view/20826963/VUqymsv9#intro">포스트맨 DOCS</a>
+<a href="https://documenter.getpostman.com/view/20826963/VUqymsv9#intro">포스트맨 DOCS 바로가기</a>
 
 <br>
 
